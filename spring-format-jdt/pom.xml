@@ -11,22 +11,32 @@
 	<packaging>eclipse-plugin</packaging>
 	<build>
 		<plugins>
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-dependency-plugin</artifactId>
-				<executions> <execution> <goals> <goal>unpack-dependencies</goal> </goals>
-				<phase>prepare-package</phase> <configuration> <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-				<excludes>META-INF/*</excludes> </configuration> </execution> </executions>
-				</plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<phase>prepare-package</phase>
+						<configuration>
+							<outputDirectory>${project.build.outputDirectory}</outputDirectory>
+							<excludes>META-INF/*,**.dll,**.so</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>com.github.wvengen</groupId>
 				<artifactId>proguard-maven-plugin</artifactId>
 				<version>2.0.13</version>
 				<configuration>
-					<includeDependencyInjar>true</includeDependencyInjar>
+					<includeDependency>false</includeDependency>
 					<libs>
 						<lib>${java.home}/lib/rt.jar</lib>
 						<lib>${java.home}/lib/jsse.jar</lib>
 					</libs>
-					<inFilter>!META-INF/**,plugin.xml,plugin.properties</inFilter>
 					<options>
 						<option>-dontobfuscate</option>
 						<option>-dontoptimize</option>
@@ -37,24 +47,6 @@
 						<option>-ignorewarnings</option>
 						<option>-printseeds</option>
 					</options>
-					<exclusions>
-						<exclusion>
-							<groupId>p2.eclipse-plugin</groupId>
-							<artifactId>org.eclipse.swt:jar</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>p2.eclipse-plugin</groupId>
-							<artifactId>org.eclipse.swt.win32.win32.x86</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>p2.eclipse-plugin</groupId>
-							<artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
-						</exclusion>
-						<exclusion>
-							<groupId>p2.eclipse-plugin</groupId>
-							<artifactId>org.eclipse.swt.cocoa.macosx.x86_64</artifactId>
-						</exclusion>
-					</exclusions>
 				</configuration>
 				<executions>
 					<execution>
