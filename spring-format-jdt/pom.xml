@@ -11,52 +11,67 @@
 	<packaging>eclipse-plugin</packaging>
 	<build>
 		<plugins>
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-dependency-plugin</artifactId>
+				<executions> <execution> <goals> <goal>unpack-dependencies</goal> </goals>
+				<phase>prepare-package</phase> <configuration> <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+				<excludes>META-INF/*</excludes> </configuration> </execution> </executions>
+				</plugin> -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
+				<groupId>com.github.wvengen</groupId>
+				<artifactId>proguard-maven-plugin</artifactId>
+				<version>2.0.13</version>
+				<configuration>
+					<includeDependencyInjar>true</includeDependencyInjar>
+					<libs>
+						<lib>${java.home}/lib/rt.jar</lib>
+						<lib>${java.home}/lib/jsse.jar</lib>
+					</libs>
+					<inFilter>!META-INF/**,plugin.xml,plugin.properties</inFilter>
+					<options>
+						<option>-dontobfuscate</option>
+						<option>-dontoptimize</option>
+						<option>-keepattributes</option>
+						<option>-keep class org.eclipse.jdt.core.formatter.** {*;}</option>
+						<option>-keep class org.eclipse.jdt.internal.formatter.** {*;}</option>
+						<option>-keep class org.eclipse.jface.text.Document {*;}</option>
+						<option>-ignorewarnings</option>
+						<option>-printseeds</option>
+					</options>
+					<exclusions>
+						<exclusion>
+							<groupId>p2.eclipse-plugin</groupId>
+							<artifactId>org.eclipse.swt:jar</artifactId>
+						</exclusion>
+						<exclusion>
+							<groupId>p2.eclipse-plugin</groupId>
+							<artifactId>org.eclipse.swt.win32.win32.x86</artifactId>
+						</exclusion>
+						<exclusion>
+							<groupId>p2.eclipse-plugin</groupId>
+							<artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+						</exclusion>
+						<exclusion>
+							<groupId>p2.eclipse-plugin</groupId>
+							<artifactId>org.eclipse.swt.cocoa.macosx.x86_64</artifactId>
+						</exclusion>
+					</exclusions>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
-							<goal>unpack-dependencies</goal>
+							<goal>proguard</goal>
 						</goals>
-						<phase>prepare-package</phase>
-						<configuration>
-							<outputDirectory>${project.build.outputDirectory}</outputDirectory>
-							<excludes>META-INF/*</excludes>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<executions>
-					<execution>
 						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<createSourcesJar>true</createSourcesJar>
-							<shadeSourcesContent>true</shadeSourcesContent>
-							<shadedClassifierName>formatter</shadedClassifierName>
-							<shadedArtifactAttached>true</shadedArtifactAttached>
-							<filters>
-								<filter>
-									<includes>
-										<include>org/eclipse/jdt/internal/formatter/**</include>
-									</includes>
-								</filter>
-							</filters>
-							<relocations>
-								<relocation>
-									<pattern>org.eclipse.jdt.internal.formatter</pattern>
-									<shadedPattern>io.spring.formatter.eclipse.jdt.internal.formatter</shadedPattern>
-								</relocation>
-							</relocations>
-						</configuration>
 					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>net.sf.proguard</groupId>
+						<artifactId>proguard-base</artifactId>
+						<version>5.3</version>
+						<scope>runtime</scope>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
