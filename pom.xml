@@ -120,6 +120,11 @@
 					<artifactId>junit</artifactId>
 					<version>4.12</version>
 				</dependency>
+				<dependency>
+					<groupId>org.assertj</groupId>
+					<artifactId>assertj-core</artifactId>
+					<version>3.3.0</version>
+				</dependency>
 			</dependencies>
 	</dependencyManagement>
 	<repositories>
@@ -131,10 +136,8 @@
 	</repositories>
 	<modules>
 		<module>spring-format</module>
-		<module>spring-format-jdt</module>
-		<module>spring-format-cli</module>
+		<module>spring-format-eclipse-runtime</module>
+		<module>spring-format-eclipse-formatter</module>
 		<module>spring-format-eclipse-plugin</module>
-		<module>spring-format-intellij-plugin</module>
-		<module>spring-format-maven-plugin</module>
 	</modules>
 </project>

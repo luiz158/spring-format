@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>spring-format-eclipse-formatter</artifactId>
+	<description>Eclipse code formatter code repackaged</description>
+	<parent>
+		<groupId>io.spring.format</groupId>
+		<artifactId>spring-format-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>io.spring.format</groupId>
+			<artifactId>spring-format-eclipse-runtime</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<optional>true</optional>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<filters>
+								<filter>
+									<artifact>io.spring.format:spring-format-eclipse-runtime</artifact>
+									<includes>
+										<include>org/eclipse/jdt/internal/formatter/**</include>
+									</includes>
+								</filter>
+							</filters>
+							<relocations>
+								<relocation>
+									<pattern>org.eclipse.jdt.internal.formatter</pattern>
+									<shadedPattern>io.spring.formatter.eclipse.formatter</shadedPattern>
+								</relocation>
+							</relocations>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
