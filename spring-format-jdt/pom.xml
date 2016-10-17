@@ -27,6 +27,37 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<createSourcesJar>true</createSourcesJar>
+							<shadeSourcesContent>true</shadeSourcesContent>
+							<shadedClassifierName>formatter</shadedClassifierName>
+							<shadedArtifactAttached>true</shadedArtifactAttached>
+							<filters>
+								<filter>
+									<includes>
+										<include>org/eclipse/jdt/internal/formatter/**</include>
+									</includes>
+								</filter>
+							</filters>
+							<relocations>
+								<relocation>
+									<pattern>org.eclipse.jdt.internal.formatter</pattern>
+									<shadedPattern>io.spring.formatter.eclipse.jdt.internal.formatter</shadedPattern>
+								</relocation>
+							</relocations>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
