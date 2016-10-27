@@ -238,4 +238,81 @@
 		<module>spring-format-eclipse-plugin</module>
 		<module>spring-format-intellij-plugin</module>
 	</modules>
+	<profiles>
+		<profile>
+			<id>install-intellij-sources</id>
+			<activation>
+				<property>
+					<name>intellij-sources</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack-intellij</id>
+								<phase>validate</phase>
+								<inherited>false</inherited>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<untar src="${project.build.directory}/intellij.tgz"
+											compression="gzip" dest="${project.build.directory}/intellij">
+											<patternset>
+												<include name="*/lib/*.jar" />
+											</patternset>
+											<mapper type="flatten" />
+										</untar>
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-install-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>install-intellij-openapi</id>
+								<phase>validate</phase>
+								<inherited>false</inherited>
+								<goals>
+									<goal>install-file</goal>
+								</goals>
+								<configuration>
+									<file>${project.build.directory}/intellij/openapi.jar</file>
+									<groupId>io.spring.format.intellij</groupId>
+									<artifactId>openapi</artifactId>
+									<version>${project.version}</version>
+									<packaging>jar</packaging>
+									<generatePom>true</generatePom>
+								</configuration>
+							</execution>
+							<execution>
+								<id>install-intellij-util</id>
+								<phase>validate</phase>
+								<inherited>false</inherited>
+								<goals>
+									<goal>install-file</goal>
+								</goals>
+								<configuration>
+									<file>${project.build.directory}/intellij/util.jar</file>
+									<groupId>io.spring.format.intellij</groupId>
+									<artifactId>util</artifactId>
+									<version>${project.version}</version>
+									<packaging>jar</packaging>
+									<generatePom>true</generatePom>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
