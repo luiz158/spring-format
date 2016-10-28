@@ -9,4 +9,11 @@
 	</parent>
 	<artifactId>spring-format-intellij</artifactId>
 	<packaging>pom</packaging>
+	<properties>
+		<main.basedir>${basedir}/..</main.basedir>
+	</properties>
+	<modules>
+		<module>spring-format-intellij-plugin</module>
+		<module>spring-format-intellij-runtime</module>
+	</modules>
 </project>

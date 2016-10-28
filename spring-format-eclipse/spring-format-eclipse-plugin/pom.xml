@@ -5,7 +5,7 @@
 	<artifactId>spring-format-eclipse-plugin</artifactId>
 	<parent>
 		<groupId>io.spring.format</groupId>
-		<artifactId>spring-format-parent</artifactId>
+		<artifactId>spring-format-eclipse</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 </project>

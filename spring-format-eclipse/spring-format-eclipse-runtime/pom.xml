@@ -5,11 +5,10 @@
 	<artifactId>spring-format-eclipse-runtime</artifactId>
 	<parent>
 		<groupId>io.spring.format</groupId>
-		<artifactId>spring-format-parent</artifactId>
+		<artifactId>spring-format-eclipse</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<packaging>eclipse-plugin</packaging>
-	<description>Minimal Eclipse runtime required for code formatting</description>
 	<build>
 		<plugins>
 			<plugin>

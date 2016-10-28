@@ -2,13 +2,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>spring-format-intellij-plugin</artifactId>
 	<parent>
 		<groupId>io.spring.format</groupId>
-		<artifactId>spring-format-parent</artifactId>
+		<artifactId>spring-format-intellij</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
+	<artifactId>spring-format-intellij-plugin</artifactId>
+	<properties>
+		<main.basedir>${basedir}/../..</main.basedir>
+	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>io.spring.format</groupId>
+			<artifactId>spring-format-intellij-runtime</artifactId>
+			<version>${project.version}</version>
+			<type>pom</type>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>io.spring.format.intellij</groupId>
 			<artifactId>util</artifactId>

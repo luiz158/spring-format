@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.spring.format</groupId>
+		<artifactId>spring-format-intellij</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>spring-format-intellij-runtime</artifactId>
+	<packaging>pom</packaging>
+	<properties>
+		<main.basedir>${basedir}/../..</main.basedir>
+		<intellij.binary>http://download.jetbrains.com/idea/ideaIC-2016.2.5.tar.gz</intellij.binary>
+		<intellij.binary.sha1>0db6f663c0dd8305f5e4b8b308d4e1144443e60f</intellij.binary.sha1>
+		<intellij.source>https://github.com/JetBrains/intellij-community/archive/162.2032.zip</intellij.source>
+		<intellij.source.sha1>f8354d6b6460c00de04c6de850fde7f7c753af31</intellij.source.sha1>
+		<intellij.source.root>intellij-community-162.2032</intellij.source.root>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.googlecode.maven-download-plugin</groupId>
+				<artifactId>download-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>download-intellij-binary</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>${intellij.binary}</url>
+							<sha1>${intellij.binary.sha1}</sha1>
+							<outputFileName>intellij.tgz</outputFileName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>download-intellij-source</id>
+						<phase>install</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>${intellij.source}</url>
+							<sha1>${intellij.source.sha1}</sha1>
+							<outputFileName>intellij-source.zip</outputFileName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>prepare-intellij</id>
+						<phase>install</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<untar src="${project.build.directory}/intellij.tgz"
+									compression="gzip" dest="${project.build.directory}/intellij">
+									<patternset>
+										<include name="*/lib/*.jar" />
+									</patternset>
+									<mapper type="flatten" />
+								</untar>
+								<unzip src="${project.build.directory}/intellij-source.zip"
+									dest="${project.build.directory}/intellij-source">
+									<patternset>
+										<include name="${intellij.source.root}/platform/core-api/src/**" />
+										<include name="${intellij.source.root}/platform/util/src/**" />
+									</patternset>
+								</unzip>
+								<zip
+									destfile="${project.build.directory}/intellij-source/openapi-sources.zip"
+									basedir="${project.build.directory}/intellij-source/${intellij.source.root}/platform/core-api/src" />
+								<zip
+									destfile="${project.build.directory}/intellij-source/util-sources.zip"
+									basedir="${project.build.directory}/intellij-source/${intellij.source.root}/platform/util/src" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>install-intellij-openapi</id>
+						<phase>install</phase>
+						<inherited>false</inherited>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>${project.build.directory}/intellij/openapi.jar</file>
+							<sources>${project.build.directory}/intellij-source/openapi-sources.zip</sources>
+							<groupId>io.spring.format.intellij</groupId>
+							<artifactId>openapi</artifactId>
+							<version>${project.version}</version>
+							<packaging>jar</packaging>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-intellij-util</id>
+						<phase>install</phase>
+						<inherited>false</inherited>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>${project.build.directory}/intellij/util.jar</file>
+							<sources>${project.build.directory}/intellij-source/util-sources.zip</sources>
+							<groupId>io.spring.format.intellij</groupId>
+							<artifactId>util</artifactId>
+							<version>${project.version}</version>
+							<packaging>jar</packaging>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
