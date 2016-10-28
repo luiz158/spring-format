@@ -37,13 +37,27 @@ import org.eclipse.text.edits.TextEdit;
  */
 public class Formatter extends CodeFormatter {
 
+	/**
+	 * TODO.
+	 */
+	public static final int DEFAULT_KIND = CodeFormatter.K_COMPILATION_UNIT
+			| CodeFormatter.F_INCLUDE_COMMENTS;
+
+	/**
+	 * TODO.
+	 */
+	public static final int DEFAULT_INDENTATION_LEVEL = 0;
+
+	/**
+	 * TODO.
+	 */
+	public static final String DEFAULT_LINE_SEPARATOR = null;
+
 	private CodeFormatter delegate = new DelegateCodeFormatter();
 
 	public String format(String source) {
 		IDocument document = new Document(source);
-		TextEdit textEdit = format(
-				CodeFormatter.K_COMPILATION_UNIT | CodeFormatter.F_INCLUDE_COMMENTS,
-				source, 0, source.length(), 0, null);
+		TextEdit textEdit = format(source, 0, source.length());
 		try {
 			textEdit.apply(document);
 		}
@@ -53,11 +67,21 @@ public class Formatter extends CodeFormatter {
 		return document.get();
 	}
 
+	public TextEdit format(String source, int offset, int length) {
+		return format(DEFAULT_KIND, source, offset, length, DEFAULT_INDENTATION_LEVEL,
+				DEFAULT_LINE_SEPARATOR);
+	}
+
 	@Override
 	public TextEdit format(int kind, String source, int offset, int length,
 			int indentationLevel, String lineSeparator) {
 		return this.delegate.format(kind, source, offset, length, indentationLevel,
 				lineSeparator);
+	}
+
+	public TextEdit format(String source, IRegion[] regions) {
+		return format(DEFAULT_KIND, source, regions, DEFAULT_INDENTATION_LEVEL,
+				DEFAULT_LINE_SEPARATOR);
 	}
 
 	@Override

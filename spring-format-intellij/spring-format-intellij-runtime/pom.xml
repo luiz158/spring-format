@@ -73,6 +73,7 @@
 									<patternset>
 										<include name="${intellij.source.root}/platform/core-api/src/**" />
 										<include name="${intellij.source.root}/platform/util/src/**" />
+										<include name="${intellij.source.root}/platform/extensions/src/**" />
 									</patternset>
 								</unzip>
 								<zip
@@ -81,6 +82,9 @@
 								<zip
 									destfile="${project.build.directory}/intellij-source/util-sources.zip"
 									basedir="${project.build.directory}/intellij-source/${intellij.source.root}/platform/util/src" />
+								<zip
+									destfile="${project.build.directory}/intellij-source/extensions-sources.zip"
+									basedir="${project.build.directory}/intellij-source/${intellij.source.root}/platform/extensions/src" />
 							</target>
 						</configuration>
 					</execution>
@@ -119,6 +123,23 @@
 							<sources>${project.build.directory}/intellij-source/util-sources.zip</sources>
 							<groupId>io.spring.format.intellij</groupId>
 							<artifactId>util</artifactId>
+							<version>${project.version}</version>
+							<packaging>jar</packaging>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-intellij-extensions</id>
+						<phase>install</phase>
+						<inherited>false</inherited>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>${project.build.directory}/intellij/extensions.jar</file>
+							<sources>${project.build.directory}/intellij-source/extensions-sources.zip</sources>
+							<groupId>io.spring.format.intellij</groupId>
+							<artifactId>extensions</artifactId>
 							<version>${project.version}</version>
 							<packaging>jar</packaging>
 							<generatePom>true</generatePom>

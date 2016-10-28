@@ -12,6 +12,18 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<dependencies>
+		<!-- Compile -->
+		<dependency>
+			<groupId>io.spring.format</groupId>
+			<artifactId>spring-format</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.spring.format</groupId>
+			<artifactId>spring-format-eclipse-runtime</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- Provided -->
 		<dependency>
 			<groupId>io.spring.format</groupId>
 			<artifactId>spring-format-intellij-runtime</artifactId>
@@ -21,7 +33,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.spring.format.intellij</groupId>
-			<artifactId>util</artifactId>
+			<artifactId>extensions</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
@@ -31,5 +43,36 @@
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.spring.format.intellij</groupId>
+			<artifactId>util</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.picocontainer</groupId>
+			<artifactId>picocontainer</artifactId>
+			<version>1.2</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class FormatterTests {
 
-	private static final String[] FILES = { "simple" };
+	private static final String[] FILES = { "simple", "springboot" };
 
 	private Formatter formatter = new Formatter();
 

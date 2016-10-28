@@ -43,6 +43,10 @@ public class DelegatingCodeStyleManager extends CodeStyleManager {
 		this.delegate = delegate;
 	}
 
+	protected CodeStyleManager getDelegate() {
+		return this.delegate;
+	}
+
 	@Override
 	public Project getProject() {
 		return this.delegate.getProject();
