@@ -46,8 +46,6 @@ import org.eclipse.text.edits.TextEdit;
  */
 public class SpringCodeStyleManager extends DelegatingCodeStyleManager {
 
-	private static final Formatter FORMATTER = new Formatter();
-
 	public SpringCodeStyleManager(CodeStyleManager delegate) {
 		super(delegate);
 	}
@@ -94,14 +92,15 @@ public class SpringCodeStyleManager extends DelegatingCodeStyleManager {
 		checkWritable(file);
 		Document document = documentManager.getDocument(file);
 		if (document != null) {
+			Formatter formatter = new Formatter();
 			String source = document.getText();
 			System.out.println("---------");
 			System.out.println(source);
 			System.out.println("---------");
-			System.out.println(FORMATTER.format(source));
+			System.out.println(formatter.format(source));
 			System.out.println("---------");
 			IRegion[] regions = asRegions(ranges);
-			applyEdit(document, FORMATTER.format(source, regions));
+			applyEdit(document, formatter.format(source, regions));
 		}
 	}
 

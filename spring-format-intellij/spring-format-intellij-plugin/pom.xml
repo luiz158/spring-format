@@ -69,6 +69,7 @@
 						</goals>
 						<configuration>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
+							<shadeSourcesContent>true</shadeSourcesContent>
 						</configuration>
 					</execution>
 				</executions>

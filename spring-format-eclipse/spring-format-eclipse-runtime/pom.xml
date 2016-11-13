@@ -9,6 +9,9 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<packaging>eclipse-plugin</packaging>
+	<properties>
+		<sourceartifacts>org.eclipse.jdt.core.source,org.eclipse.jface.source</sourceartifacts>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
@@ -16,13 +19,26 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
+						<id>unpack-dependencies</id>
 						<goals>
 							<goal>unpack-dependencies</goal>
 						</goals>
 						<phase>prepare-package</phase>
 						<configuration>
 							<outputDirectory>${project.build.outputDirectory}</outputDirectory>
-							<excludes>META-INF/*,**.dll,**.so</excludes>
+							<excludes>META-INF/*,**.dll,**.so,**.java</excludes>
+							<excludeArtifactIds>${sourceartifacts}</excludeArtifactIds>
+						</configuration>
+					</execution>
+					<execution>
+						<id>unpack-source-dependencies</id>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<phase>prepare-package</phase>
+						<configuration>
+							<outputDirectory>${project.build.directory}/sources</outputDirectory>
+							<includeArtifactIds>${sourceartifacts}</includeArtifactIds>
 						</configuration>
 					</execution>
 				</executions>
@@ -31,32 +47,6 @@
 				<groupId>com.github.wvengen</groupId>
 				<artifactId>proguard-maven-plugin</artifactId>
 				<version>2.0.13</version>
-				<configuration>
-					<includeDependency>false</includeDependency>
-					<libs>
-						<lib>${java.home}/lib/rt.jar</lib>
-						<lib>${java.home}/lib/jsse.jar</lib>
-					</libs>
-					<options>
-						<option>-dontobfuscate</option>
-						<option>-dontoptimize</option>
-						<option>-keepattributes</option>
-						<option>-keep class org.eclipse.jdt.core.formatter.** {*;}</option>
-						<option>-keep class org.eclipse.jdt.internal.formatter.** {*;}</option>
-						<option>-keep class org.eclipse.jface.text.Document {*;}</option>
-						<option>-ignorewarnings</option>
-						<option>-dontnote</option>
-						<option>-dontwarn</option>
-					</options>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>proguard</goal>
-						</goals>
-						<phase>package</phase>
-					</execution>
-				</executions>
 				<dependencies>
 					<dependency>
 						<groupId>net.sf.proguard</groupId>
@@ -65,6 +55,55 @@
 						<scope>runtime</scope>
 					</dependency>
 				</dependencies>
+				<executions>
+					<execution>
+						<id>reduce-eclipse-runtime</id>
+						<phase>package</phase>
+						<goals>
+							<goal>proguard</goal>
+						</goals>
+						<configuration>
+							<includeDependency>false</includeDependency>
+							<libs>
+								<lib>${java.home}/lib/rt.jar</lib>
+								<lib>${java.home}/lib/jsse.jar</lib>
+							</libs>
+							<options>
+								<option>-dontobfuscate</option>
+								<option>-dontoptimize</option>
+								<option>-keepattributes</option>
+								<option>-keep class org.eclipse.jdt.core.formatter.** {*;}</option>
+								<option>-keep class org.eclipse.jdt.internal.formatter.** {*;}</option>
+								<option>-keep class org.eclipse.jface.text.Document {*;}</option>
+								<option>-ignorewarnings</option>
+								<option>-dontnote</option>
+								<option>-dontwarn</option>
+							</options>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>repackage-source</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<zip
+									destfile="${project.build.directory}/${project.build.finalName}-sources.jar"
+									basedir="${project.build.directory}/sources" />
+								<attachartifact file="${project.build.directory}/${project.build.finalName}-sources.jar"
+									classifier="sources" type="jar" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
