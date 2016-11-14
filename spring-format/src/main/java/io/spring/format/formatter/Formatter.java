@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
-import io.spring.formatter.eclipse.formatter.DefaultCodeFormatter;
+import io.spring.formatter.eclipse.formatter.ExtendedCodeFormatter;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -68,8 +68,17 @@ public class Formatter extends CodeFormatter {
 	}
 
 	public TextEdit format(String source, int offset, int length) {
-		return format(DEFAULT_KIND, source, offset, length, DEFAULT_INDENTATION_LEVEL,
-				DEFAULT_LINE_SEPARATOR);
+		String nlsWarnings = System.getProperty("osgi.nls.warnings");
+		try {
+			System.setProperty("osgi.nls.warnings", "ignore");
+			return format(DEFAULT_KIND, source, offset, length, DEFAULT_INDENTATION_LEVEL,
+					DEFAULT_LINE_SEPARATOR);
+		}
+		finally {
+			if (nlsWarnings != null) {
+				System.setProperty("osgi.nls.warnings", nlsWarnings);
+			}
+		}
 	}
 
 	@Override
@@ -91,10 +100,11 @@ public class Formatter extends CodeFormatter {
 				lineSeparator);
 	}
 
-	private static class DelegateCodeFormatter extends DefaultCodeFormatter {
+	private static class DelegateCodeFormatter extends ExtendedCodeFormatter {
 
 		DelegateCodeFormatter() {
 			super(loadOptions());
+			addPreparator(new Dunno());
 		}
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })

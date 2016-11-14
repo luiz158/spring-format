@@ -8,6 +8,9 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-format-eclipse-formatter</artifactId>
+	<properties>
+		<main.basedir>${basedir}/../..</main.basedir>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.spring.format</groupId>
@@ -18,6 +21,19 @@
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-source</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -44,6 +60,7 @@
 							</relocations>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
 							<createSourcesJar>true</createSourcesJar>
+							<shadeSourcesContent>true</shadeSourcesContent>
 						</configuration>
 					</execution>
 				</executions>
