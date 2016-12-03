@@ -17,38 +17,75 @@
 package io.spring.format.formatter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link Formatter}.
  */
+@RunWith(Parameterized.class)
 public class FormatterTests {
 
-	private static final String[] FILES = { "springboot" }; // "simple",
+	private final File source;
 
-	private Formatter formatter = new Formatter();
+	private final File expected;
+
+	private final Formatter formatter;
+
+	public FormatterTests(File source, File expected) {
+		this.source = source;
+		this.expected = expected;
+		this.formatter = new Formatter();
+	}
 
 	@Test
-	public void formatSourceFiles() throws Exception {
-		for (String file : FILES) {
-			String source = read(file + "-input.txt");
-			String expected = read(file + "-expected.txt");
-			String formatted = this.formatter.format(source);
-			System.out.println("---");
-			System.out.println(source);
-			System.out.println("--->");
-			System.out.println(formatted);
-			System.out.println("---");
-			assertThat(formatted).as(file).isEqualTo(expected);
+	public void format() throws Exception {
+		String sourceContent = read(this.source);
+		String expectedContent = read(this.expected);
+		String formattedContent = this.formatter.format(sourceContent);
+		if (!expectedContent.equals(formattedContent)) {
+			System.out.println(
+					"Formatted " + this.source + " does not match " + this.expected);
+			print("Source " + this.source, sourceContent);
+			print("Expected +" + this.expected, expectedContent);
+			print("Got", formattedContent);
+			System.out.println("----------------------------------------");
+			fail("Formatted content does not match for " + this.source);
 		}
 	}
 
-	private String read(String name) throws Exception {
-		InputStream inputStream = getClass().getResourceAsStream(name);
+	private void print(String name, String content) {
+		System.out.println(name + ":");
+		System.out.println();
+		System.out.println(content);
+		System.out.println();
+		System.out.println();
+	}
+
+	private String read(File file) throws Exception {
+		InputStream inputStream = new FileInputStream(file);
+		try {
+			return read(inputStream);
+		}
+		finally {
+			inputStream.close();
+		}
+	}
+
+	private String read(InputStream inputStream)
+			throws IOException, UnsupportedEncodingException {
 		ByteArrayOutputStream result = new ByteArrayOutputStream();
 		byte[] buffer = new byte[1024];
 		int length;
@@ -56,6 +93,18 @@ public class FormatterTests {
 			result.write(buffer, 0, length);
 		}
 		return result.toString("UTF-8");
+	}
+
+	@Parameters(name = "{0}")
+	public static Collection<Object[]> files() {
+		Collection<Object[]> files = new ArrayList<>();
+		File sourceDir = new File("src/test/resources/source");
+		File expectedDir = new File("src/test/resources/expected");
+		for (File source : sourceDir.listFiles((dir, name) -> !name.startsWith("."))) {
+			File expected = new File(expectedDir, source.getName());
+			files.add(new Object[] { source, expected });
+		}
+		return files;
 	}
 
 }

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import io.spring.formatter.eclipse.formatter.ExtendedCodeFormatter;
+import io.spring.formatter.eclipse.formatter.Preparator;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -31,30 +32,35 @@ import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
 /**
- * TODO.
+ * A {@link CodeFormatter} that applies Spring formatting conventions.
  *
  * @author Phillip Webb
  */
 public class Formatter extends CodeFormatter {
 
 	/**
-	 * TODO.
+	 * The components that will be formatted by default.
 	 */
-	public static final int DEFAULT_KIND = CodeFormatter.K_COMPILATION_UNIT
+	private static final int DEFAULT_COMPONENTS = CodeFormatter.K_COMPILATION_UNIT
 			| CodeFormatter.F_INCLUDE_COMMENTS;
 
 	/**
-	 * TODO.
+	 * The default indentation level.
 	 */
-	public static final int DEFAULT_INDENTATION_LEVEL = 0;
+	private static final int DEFAULT_INDENTATION_LEVEL = 0;
 
 	/**
-	 * TODO.
+	 * The default line separator.
 	 */
-	public static final String DEFAULT_LINE_SEPARATOR = null;
+	private static final String DEFAULT_LINE_SEPARATOR = null;
 
 	private CodeFormatter delegate = new DelegateCodeFormatter();
 
+	/**
+	 * Format the given source content.
+	 * @param source the source content to format
+	 * @return the formatted content
+	 */
 	public String format(String source) {
 		IDocument document = new Document(source);
 		TextEdit textEdit = format(source, 0, source.length());
@@ -67,12 +73,19 @@ public class Formatter extends CodeFormatter {
 		return document.get();
 	}
 
+	/**
+	 * Format a specific subsection of the given source content
+	 * @param source the source content to format
+	 * @param offset the offset to start formatting
+	 * @param length the length to format
+	 * @return the formatted content
+	 */
 	public TextEdit format(String source, int offset, int length) {
 		String nlsWarnings = System.getProperty("osgi.nls.warnings");
 		try {
 			System.setProperty("osgi.nls.warnings", "ignore");
-			return format(DEFAULT_KIND, source, offset, length, DEFAULT_INDENTATION_LEVEL,
-					DEFAULT_LINE_SEPARATOR);
+			return format(DEFAULT_COMPONENTS, source, offset, length,
+					DEFAULT_INDENTATION_LEVEL, DEFAULT_LINE_SEPARATOR);
 		}
 		finally {
 			if (nlsWarnings != null) {
@@ -88,8 +101,14 @@ public class Formatter extends CodeFormatter {
 				lineSeparator);
 	}
 
+	/**
+	 * Format specific subsections of the given source content
+	 * @param source the source content to format
+	 * @param regions the regions to format
+	 * @return the formatted content
+	 */
 	public TextEdit format(String source, IRegion[] regions) {
-		return format(DEFAULT_KIND, source, regions, DEFAULT_INDENTATION_LEVEL,
+		return format(DEFAULT_COMPONENTS, source, regions, DEFAULT_INDENTATION_LEVEL,
 				DEFAULT_LINE_SEPARATOR);
 	}
 
@@ -100,11 +119,15 @@ public class Formatter extends CodeFormatter {
 				lineSeparator);
 	}
 
+	/**
+	 * Internal delegate code formatter to apply Spring {@literal formatter.prefs} and add
+	 * {@link Preparator Preparators}.
+	 */
 	private static class DelegateCodeFormatter extends ExtendedCodeFormatter {
 
 		DelegateCodeFormatter() {
 			super(loadOptions());
-			addPreparator(new Dunno());
+			addPreparator(new JavadocWhitespacePreparator());
 		}
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
