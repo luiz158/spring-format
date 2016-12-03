@@ -37,7 +37,7 @@ import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
  *
  * @author Phillip Webb
  */
-class JavadocWhitespacePreparator implements Preparator {
+class JavadocLineBreakPreparator implements Preparator {
 
 	private final static List<String> PARAM_TAGS;
 
@@ -112,7 +112,7 @@ class JavadocWhitespacePreparator implements Preparator {
 		private boolean isSquashRequired(TagElement node, ASTNode declaration) {
 			if (declaration instanceof TypeDeclaration) {
 				String tagName = node.getTagName();
-				return tagName != null && tagName.startsWith("@");
+				return (!node.isNested() && tagName != null && tagName.startsWith("@"));
 			}
 			return PARAM_TAGS.contains(node.getTagName());
 		}

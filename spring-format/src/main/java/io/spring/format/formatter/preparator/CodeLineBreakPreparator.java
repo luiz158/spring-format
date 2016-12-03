@@ -29,11 +29,11 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
 
 /**
- * {@link Preparator} to fine tune curly-brace whitespace.
+ * {@link Preparator} to fine tune curly-brace line breaks.
  *
  * @author Phillip Webb
  */
-public class CodeWhitespacePreparator implements Preparator {
+public class CodeLineBreakPreparator implements Preparator {
 
 	@Override
 	public void apply(TokenManager tokenManager, ASTNode astRoot) {

@@ -29,8 +29,8 @@ public class Preparators implements Iterable<Preparator> {
 
 	public Preparators() {
 		List<Preparator> preparators = new ArrayList<>();
-		preparators.add(new JavadocWhitespacePreparator());
-		preparators.add(new CodeWhitespacePreparator());
+		preparators.add(new JavadocLineBreakPreparator());
+		preparators.add(new CodeLineBreakPreparator());
 		this.preparators = Collections.unmodifiableList(preparators);
 	}
 
