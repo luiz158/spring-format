@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
+import io.spring.format.formatter.preparator.Preparators;
 import io.spring.formatter.eclipse.formatter.ExtendedCodeFormatter;
 import io.spring.formatter.eclipse.formatter.Preparator;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
@@ -127,7 +128,9 @@ public class Formatter extends CodeFormatter {
 
 		DelegateCodeFormatter() {
 			super(loadOptions());
-			addPreparator(new JavadocWhitespacePreparator());
+			for (Preparator preparator : new Preparators()) {
+				addPreparator(preparator);
+			}
 		}
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })

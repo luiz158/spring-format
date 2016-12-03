@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link Formatter}.
@@ -61,15 +61,18 @@ public class FormatterTests {
 			print("Source " + this.source, sourceContent);
 			print("Expected +" + this.expected, expectedContent);
 			print("Got", formattedContent);
-			System.out.println("----------------------------------------");
-			fail("Formatted content does not match for " + this.source);
+			System.out.println("========================================");
+			assertEquals("Formatted content does not match for " + this.source,
+					expectedContent, formattedContent);
 		}
 	}
 
 	private void print(String name, String content) {
 		System.out.println(name + ":");
 		System.out.println();
+		System.out.println("----------------------------------------");
 		System.out.println(content);
+		System.out.println("----------------------------------------");
 		System.out.println();
 		System.out.println();
 	}

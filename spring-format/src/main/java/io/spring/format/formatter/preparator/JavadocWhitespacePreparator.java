@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.format.formatter;
+package io.spring.format.formatter.preparator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +37,7 @@ import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
  *
  * @author Phillip Webb
  */
-public class JavadocWhitespacePreparator implements Preparator {
+class JavadocWhitespacePreparator implements Preparator {
 
 	private final static List<String> PARAM_TAGS;
 
@@ -54,9 +54,9 @@ public class JavadocWhitespacePreparator implements Preparator {
 
 	@Override
 	public void apply(TokenManager tokenManager, ASTNode astRoot) {
-		ASTVisitor whitespaceCleanupVistor = new WhitespaceCleanupVistor(tokenManager);
+		ASTVisitor visitor = new Vistor(tokenManager);
 		for (Comment comment : getComments(astRoot)) {
-			comment.accept(whitespaceCleanupVistor);
+			comment.accept(visitor);
 		}
 	}
 
@@ -69,7 +69,7 @@ public class JavadocWhitespacePreparator implements Preparator {
 		return Collections.emptyList();
 	}
 
-	private class WhitespaceCleanupVistor extends ASTVisitor {
+	private class Vistor extends ASTVisitor {
 
 		private final TokenManager tokenManager;
 
@@ -79,7 +79,7 @@ public class JavadocWhitespacePreparator implements Preparator {
 
 		private boolean firstTagElement;
 
-		WhitespaceCleanupVistor(TokenManager tokenManager) {
+		Vistor(TokenManager tokenManager) {
 			this.tokenManager = tokenManager;
 		}
 

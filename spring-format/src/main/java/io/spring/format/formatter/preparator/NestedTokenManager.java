@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.format.formatter;
+package io.spring.format.formatter.preparator;
 
 import java.util.List;
 
@@ -24,13 +24,13 @@ import io.spring.formatter.eclipse.formatter.TokenManager;
 /**
  * @author Phillip Webb
  */
-public class NestedTokenManager extends TokenManager {
+class NestedTokenManager extends TokenManager {
 
 	// FIXME might not be required since splitToken is not called
 
 	private final List<Token> structure;
 
-	public NestedTokenManager(Token token, TokenManager tokenManager) {
+	NestedTokenManager(Token token, TokenManager tokenManager) {
 		super(token.getInternalStructure(), tokenManager);
 		this.structure = token.getInternalStructure();
 	}
