@@ -76,6 +76,7 @@
 								<option>-keep class org.eclipse.jdt.internal.formatter.** {*;}</option>
 								<option>-keep class org.eclipse.jface.text.Document {*;}</option>
 								<option>-keep class org.eclipse.jdt.internal.compiler.parser.TerminalTokens {*;}</option>
+								<option>-keep class org.eclipse.jdt.core.dom.TagElement {*;}</option>
 								<option>-ignorewarnings</option>
 								<option>-dontnote</option>
 								<option>-dontwarn</option>
