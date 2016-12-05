@@ -23,6 +23,11 @@ import java.util.List;
 
 import io.spring.formatter.eclipse.formatter.Preparator;
 
+/**
+ * {@link Preparator} instances that are registered with the formatter.
+ *
+ * @author Phillip Webb
+ */
 public class Preparators implements Iterable<Preparator> {
 
 	private final List<Preparator> preparators;

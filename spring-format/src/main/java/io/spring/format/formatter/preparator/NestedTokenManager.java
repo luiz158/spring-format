@@ -22,6 +22,8 @@ import io.spring.formatter.eclipse.formatter.Token;
 import io.spring.formatter.eclipse.formatter.TokenManager;
 
 /**
+ * FIXME.
+ *
  * @author Phillip Webb
  */
 class NestedTokenManager extends TokenManager {

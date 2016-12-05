@@ -65,6 +65,7 @@
 									compression="gzip" dest="${project.build.directory}/intellij">
 									<patternset>
 										<include name="*/lib/*.jar" />
+										<include name="*/plugins/maven/lib/maven.jar" />
 									</patternset>
 									<mapper type="flatten" />
 								</untar>
@@ -74,6 +75,7 @@
 										<include name="${intellij.source.root}/platform/core-api/src/**" />
 										<include name="${intellij.source.root}/platform/util/src/**" />
 										<include name="${intellij.source.root}/platform/extensions/src/**" />
+										<include name="${intellij.source.root}/plugins/maven/src/**" />
 									</patternset>
 								</unzip>
 								<zip
@@ -85,6 +87,9 @@
 								<zip
 									destfile="${project.build.directory}/intellij-source/extensions-sources.zip"
 									basedir="${project.build.directory}/intellij-source/${intellij.source.root}/platform/extensions/src" />
+								<zip
+									destfile="${project.build.directory}/intellij-source/maven-sources.zip"
+									basedir="${project.build.directory}/intellij-source/${intellij.source.root}/plugins/maven/src" />
 							</target>
 						</configuration>
 					</execution>
@@ -140,6 +145,23 @@
 							<sources>${project.build.directory}/intellij-source/extensions-sources.zip</sources>
 							<groupId>io.spring.format.intellij</groupId>
 							<artifactId>extensions</artifactId>
+							<version>${project.version}</version>
+							<packaging>jar</packaging>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-intellij-maven</id>
+						<phase>install</phase>
+						<inherited>false</inherited>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>${project.build.directory}/intellij/maven.jar</file>
+							<sources>${project.build.directory}/intellij-source/maven-sources.zip</sources>
+							<groupId>io.spring.format.intellij</groupId>
+							<artifactId>maven</artifactId>
 							<version>${project.version}</version>
 							<packaging>jar</packaging>
 							<generatePom>true</generatePom>

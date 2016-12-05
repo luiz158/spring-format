@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link Formatter}.
@@ -62,8 +62,8 @@ public class FormatterTests {
 			print("Expected +" + this.expected, expectedContent);
 			print("Got", formattedContent);
 			System.out.println("========================================");
-			assertEquals("Formatted content does not match for " + this.source,
-					expectedContent, formattedContent);
+			assertThat(expectedContent).isEqualTo(formattedContent)
+					.describedAs("Formatted content does not match for " + this.source);
 		}
 	}
 

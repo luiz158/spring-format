@@ -75,7 +75,7 @@ public class Formatter extends CodeFormatter {
 	}
 
 	/**
-	 * Format a specific subsection of the given source content
+	 * Format a specific subsection of the given source content.
 	 * @param source the source content to format
 	 * @param offset the offset to start formatting
 	 * @param length the length to format
@@ -103,7 +103,7 @@ public class Formatter extends CodeFormatter {
 	}
 
 	/**
-	 * Format specific subsections of the given source content
+	 * Format specific subsections of the given source content.
 	 * @param source the source content to format
 	 * @param regions the regions to format
 	 * @return the formatted content

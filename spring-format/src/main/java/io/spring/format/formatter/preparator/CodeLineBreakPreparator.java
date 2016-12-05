@@ -45,7 +45,7 @@ public class CodeLineBreakPreparator implements Preparator {
 
 		private final TokenManager tokenManager;
 
-		public Vistor(TokenManager tokenManager) {
+		Vistor(TokenManager tokenManager) {
 			this.tokenManager = tokenManager;
 		}
 
