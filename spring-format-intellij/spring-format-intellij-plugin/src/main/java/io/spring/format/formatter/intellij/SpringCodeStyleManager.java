@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -40,11 +41,13 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.text.edits.TextEdit;
 
 /**
- * TODO.
+ * {@link CodeStyleManager} to apply Spring Formatting conventions.
  *
  * @author Phillip Webb
  */
 public class SpringCodeStyleManager extends DelegatingCodeStyleManager {
+
+	private static final IRegion[] NO_REGIONS = {};
 
 	public SpringCodeStyleManager(CodeStyleManager delegate) {
 		super(delegate);
@@ -53,77 +56,74 @@ public class SpringCodeStyleManager extends DelegatingCodeStyleManager {
 	@Override
 	public void reformatText(PsiFile file, int startOffset, int endOffset)
 			throws IncorrectOperationException {
-		if (canFormat(file)) {
-			TextRange range = new TextRange(startOffset, endOffset);
-			format(file, Collections.singleton(range));
-			return;
-		}
-		super.reformatText(file, startOffset, endOffset);
+		reformat(file, () -> Collections.singleton(new TextRange(startOffset, endOffset)),
+				() -> super.reformatText(file, startOffset, endOffset));
 	}
 
 	@Override
 	public void reformatText(PsiFile file, Collection<TextRange> ranges)
 			throws IncorrectOperationException {
-		if (canFormat(file)) {
-			format(file, ranges);
-			return;
-		}
-		super.reformatTextWithContext(file, ranges);
+		reformat(file, () -> ranges, () -> super.reformatText(file, ranges));
 	}
 
 	@Override
 	public void reformatTextWithContext(PsiFile file, Collection<TextRange> ranges)
 			throws IncorrectOperationException {
-		if (canFormat(file)) {
-			format(file, ranges);
-			return;
+		reformat(file, () -> ranges, () -> super.reformatTextWithContext(file, ranges));
+	}
+
+	private void reformat(PsiFile file, Supplier<Collection<TextRange>> ranges,
+			Runnable delegate) {
+		if (StdFileTypes.JAVA.equals(file.getFileType())) {
+			applySpringFormatting(file, ranges.get());
 		}
-		super.reformatTextWithContext(file, ranges);
+		else {
+			delegate.run();
+		}
 	}
 
-	private boolean canFormat(PsiFile file) {
-		return StdFileTypes.JAVA.equals(file.getFileType());
-	}
-
-	private void format(PsiFile file, Collection<TextRange> ranges) {
+	private void applySpringFormatting(PsiFile file, Collection<TextRange> ranges) {
 		ApplicationManager.getApplication().assertWriteAccessAllowed();
 		PsiDocumentManager documentManager = PsiDocumentManager.getInstance(getProject());
 		documentManager.commitAllDocuments();
-		checkWritable(file);
-		Document document = documentManager.getDocument(file);
+		if (!file.isWritable()) {
+			throwNotWritableException(file);
+		}
+		applySpringFormatting(file, ranges, documentManager.getDocument(file));
+	}
+
+	private void applySpringFormatting(PsiFile file, Collection<TextRange> ranges,
+			Document document) {
 		if (document != null) {
 			Formatter formatter = new Formatter();
 			String source = document.getText();
-			System.out.println("---------");
-			System.out.println(source);
-			System.out.println("---------");
-			System.out.println(formatter.format(source));
-			System.out.println("---------");
 			IRegion[] regions = asRegions(ranges);
 			applyEdit(document, formatter.format(source, regions));
 		}
 	}
 
-	private void applyEdit(Document document, TextEdit textEdit) {
-		System.out.println("running");
-		WriteCommandAction.runWriteCommandAction(getProject(), () -> {
-			try {
-				EclipseDocumentAdapter adapter = new EclipseDocumentAdapter(document);
-				System.out.println("apply");
-				textEdit.apply(adapter);
-				System.out.println("done");
-				System.out.println(adapter.get());
-				PsiDocumentManager.getInstance(getProject()).commitDocument(document);
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException(ex);
-			}
-		});
+	private void throwNotWritableException(PsiElement element)
+			throws IncorrectOperationException {
+		if (element instanceof PsiDirectory) {
+			String url = ((PsiDirectory) element).getVirtualFile().getPresentableUrl();
+			throw new IncorrectOperationException(
+					PsiBundle.message("cannot.modify.a.read.only.directory", url));
+		}
+		PsiFile file = element.getContainingFile();
+		if (file == null) {
+			throw new IncorrectOperationException();
+		}
+		VirtualFile virtualFile = file.getVirtualFile();
+		if (virtualFile == null) {
+			throw new IncorrectOperationException();
+		}
+		throw new IncorrectOperationException(PsiBundle.message(
+				"cannot.modify.a.read.only.file", virtualFile.getPresentableUrl()));
 	}
 
 	private IRegion[] asRegions(Collection<TextRange> ranges) {
 		if (ranges == null) {
-			return null;
+			return NO_REGIONS;
 		}
 		List<IRegion> regions = new ArrayList<>(ranges.size());
 		for (TextRange range : ranges) {
@@ -132,28 +132,17 @@ public class SpringCodeStyleManager extends DelegatingCodeStyleManager {
 		return regions.toArray(new IRegion[regions.size()]);
 	}
 
-	private void checkWritable(final PsiElement element)
-			throws IncorrectOperationException {
-		if (!element.isWritable()) {
-			if (element instanceof PsiDirectory) {
-				String url = ((PsiDirectory) element).getVirtualFile()
-						.getPresentableUrl();
-				throw new IncorrectOperationException(
-						PsiBundle.message("cannot.modify.a.read.only.directory", url));
+	private void applyEdit(Document document, TextEdit textEdit) {
+		WriteCommandAction.runWriteCommandAction(getProject(), () -> {
+			try {
+				EclipseDocumentAdapter adapter = new EclipseDocumentAdapter(document);
+				textEdit.apply(adapter);
+				PsiDocumentManager.getInstance(getProject()).commitDocument(document);
 			}
-			else {
-				PsiFile file = element.getContainingFile();
-				if (file == null) {
-					throw new IncorrectOperationException();
-				}
-				VirtualFile virtualFile = file.getVirtualFile();
-				if (virtualFile == null) {
-					throw new IncorrectOperationException();
-				}
-				throw new IncorrectOperationException(
-						PsiBundle.message("cannot.modify.a.read.only.file",
-								virtualFile.getPresentableUrl()));
+			catch (Exception ex) {
+				throw new IllegalStateException(ex);
 			}
-		}
+		});
 	}
+
 }

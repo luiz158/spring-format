@@ -137,14 +137,10 @@ public class Formatter extends CodeFormatter {
 		private static Map<String, String> loadOptions() {
 			try {
 				Properties properties = new Properties();
-				InputStream inputStream = Formatter.class
-						.getResourceAsStream("formatter.prefs");
-				try {
+				try (InputStream inputStream = Formatter.class
+						.getResourceAsStream("formatter.prefs")) {
 					properties.load(inputStream);
 					return (Map) properties;
-				}
-				finally {
-					inputStream.close();
 				}
 			}
 			catch (IOException ex) {

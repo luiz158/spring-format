@@ -19,8 +19,8 @@ package io.spring.format.formatter.intellij;
 import com.intellij.openapi.components.AbstractProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.codeStyle.CodeStyleManager;
+import io.spring.format.formatter.intellij.trigger.InstallTriggers;
 import org.picocontainer.MutablePicoContainer;
 
 /**
@@ -34,19 +34,16 @@ public class SpringFormatComponent extends AbstractProjectComponent {
 
 	private static final Logger logger = Logger.getInstance(SpringFormatComponent.class);
 
+	private final InstallTriggers triggers;
+
 	protected SpringFormatComponent(Project project) {
 		super(project);
+		this.triggers = new InstallTriggers();
 	}
 
 	@Override
 	public void initComponent() {
-		VirtualFile baseDir = this.myProject.getBaseDir();
-		VirtualFile springFormatFile = (baseDir == null ? null
-				: baseDir.findChild(".springformat"));
-		logger.debug("Initialized SpringFormatComponent for baseDir ", baseDir,
-				" '(.springformatfile ", (springFormatFile == null ? "not " : ""),
-				"found)");
-		if (springFormatFile == null) {
+		if (this.triggers.isSpringFormatted(this.myProject)) {
 			uninstall();
 		}
 		else {

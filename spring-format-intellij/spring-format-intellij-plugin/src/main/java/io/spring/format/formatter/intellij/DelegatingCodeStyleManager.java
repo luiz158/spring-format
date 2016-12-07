@@ -31,7 +31,7 @@ import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.ThrowableRunnable;
 
 /**
- * TODO.
+ * {@link CodeStyleManager} implementation that delegates all calls.
  *
  * @author Phillip Webb
  */

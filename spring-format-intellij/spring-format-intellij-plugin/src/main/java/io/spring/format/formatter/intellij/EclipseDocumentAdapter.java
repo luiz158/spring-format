@@ -20,7 +20,8 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 
 /**
- * TODO.
+ * Adapter class to expose an IntelliJ {@link com.intellij.openapi.editor.Document} as an
+ * Eclipse {@link org.eclipse.jface.text.Document}.
  *
  * @author Phillip Webb
  */
@@ -36,7 +37,6 @@ class EclipseDocumentAdapter extends Document {
 	@Override
 	public void replace(int pos, int length, String text, long modificationStamp)
 			throws BadLocationException {
-		System.out.println("-> " + pos + " " + length + " " + text);
 		super.replace(pos, length, text, modificationStamp);
 		this.intellijDocument.replaceString(pos, pos + length, text);
 	}
