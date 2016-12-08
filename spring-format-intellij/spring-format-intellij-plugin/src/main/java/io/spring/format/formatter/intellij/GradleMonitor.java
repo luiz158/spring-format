@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package io.spring.format.formatter.intellij.trigger;
-
-import com.intellij.openapi.project.Project;
+package io.spring.format.formatter.intellij;
 
 /**
- * {@link InstallTrigger} for Gradle builds.
+ * FIXME.
  *
  * @author Phillip Webb
  */
-public class GradleInstallTrigger implements InstallTrigger {
-
-	@Override
-	public boolean isSpringFormatted(Project project) {
-		// FIXME
-		return false;
-	}
+public class GradleMonitor {
 
 }

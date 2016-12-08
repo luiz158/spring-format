@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.format.formatter.intellij;
+package io.spring.format.formatter.intellij.codestyle;
 
 import java.util.Collection;
 
@@ -43,7 +43,7 @@ public class DelegatingCodeStyleManager extends CodeStyleManager {
 		this.delegate = delegate;
 	}
 
-	protected CodeStyleManager getDelegate() {
+	public CodeStyleManager getDelegate() {
 		return this.delegate;
 	}
 

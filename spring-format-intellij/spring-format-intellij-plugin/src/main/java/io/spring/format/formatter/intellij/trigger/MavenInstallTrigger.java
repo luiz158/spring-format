@@ -16,48 +16,42 @@
 
 package io.spring.format.formatter.intellij.trigger;
 
-import com.intellij.openapi.project.DumbAwareRunnable;
-import com.intellij.openapi.project.Project;
-import org.jetbrains.idea.maven.project.MavenProject;
-import org.jetbrains.idea.maven.project.MavenProjectsManager;
-import org.jetbrains.idea.maven.utils.MavenUtil;
-
 /**
  * {@link InstallTrigger} for Maven builds.
  *
  * @author Phillip Webb
  */
-public class MavenInstallTrigger implements InstallTrigger {
+public class MavenInstallTrigger {
 
-	@Override
-	public boolean isSpringFormatted(Project project) {
-
-		MavenUtil.runWhenInitialized(project, new DumbAwareRunnable() {
-
-			@Override
-			public void run() {
-				MavenProjectsManager manager = MavenProjectsManager.getInstance(project);
-				for (MavenProject mavenProject : manager.getRootProjects()) {
-					System.out.println(mavenProject);
-				}
-			}
-
-		});
-		MavenProjectsManager manager = MavenProjectsManager.getInstance(project);
-		if (manager == null) {
-			return false;
-		}
-		for (MavenProject mavenProject : manager.getRootProjects()) {
-			if (isSpringFormatted(mavenProject)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean isSpringFormatted(MavenProject mavenProject) {
-		System.out.println(mavenProject);
-		return false;
-	}
+	// @Override
+	// public boolean isSpringFormatted(Project project) {
+	//
+	// MavenUtil.runWhenInitialized(project, new DumbAwareRunnable() {
+	//
+	// @Override
+	// public void run() {
+	// MavenProjectsManager manager = MavenProjectsManager.getInstance(project);
+	// for (MavenProject mavenProject : manager.getRootProjects()) {
+	// System.out.println(mavenProject);
+	// }
+	// }
+	//
+	// });
+	// MavenProjectsManager manager = MavenProjectsManager.getInstance(project);
+	// if (manager == null) {
+	// return false;
+	// }
+	// for (MavenProject mavenProject : manager.getRootProjects()) {
+	// if (isSpringFormatted(mavenProject)) {
+	// return true;
+	// }
+	// }
+	// return false;
+	// }
+	//
+	// private boolean isSpringFormatted(MavenProject mavenProject) {
+	// System.out.println(mavenProject);
+	// return false;
+	// }
 
 }

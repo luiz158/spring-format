@@ -16,11 +16,16 @@
 
 package io.spring.format.formatter.intellij;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.components.AbstractProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import io.spring.format.formatter.intellij.trigger.InstallTriggers;
+import io.spring.format.formatter.intellij.Trigger.State;
+import io.spring.format.formatter.intellij.codestyle.SpringCodeStyleManager;
 import org.picocontainer.MutablePicoContainer;
 
 /**
@@ -32,42 +37,70 @@ public class SpringFormatComponent extends AbstractProjectComponent {
 
 	private static final String CODE_STYLE_MANAGER_KEY = CodeStyleManager.class.getName();
 
-	private static final Logger logger = Logger.getInstance(SpringFormatComponent.class);
+	private static final String INSTALLED_PROPERTY = SpringFormatComponent.class.getName()
+			+ ".installed";
 
-	private final InstallTriggers triggers;
+	private final Lock lock = new ReentrantLock();
+
+	private Monitors monitors;
+
+	private static final Logger logger = Logger.getInstance(SpringFormatComponent.class);
 
 	protected SpringFormatComponent(Project project) {
 		super(project);
-		this.triggers = new InstallTriggers();
 	}
 
 	@Override
 	public void initComponent() {
-		if (this.triggers.isSpringFormatted(this.myProject)) {
-			uninstall();
-		}
-		else {
-			install();
+		this.monitors = new Monitors(this.myProject, FileMonitor.factory()) {
+
+			@Override
+			protected void changeState(State state) {
+				System.out.println("State changed " + state);
+			}
+
+		};
+
+		// PropertiesComponent properties =
+		// PropertiesComponent.getInstance(this.myProject);
+		// update(properties.getBoolean(INSTALLED_PROPERTY, false));
+	}
+
+	@Override
+	public void disposeComponent() {
+		if (this.monitors != null) {
+			this.monitors.stop();
+			this.monitors = null;
 		}
 	}
 
-	private void uninstall() {
-		CodeStyleManager manager = CodeStyleManager.getInstance(this.myProject);
-		if (manager != null && manager instanceof SpringCodeStyleManager) {
-			logger.debug("Uninstalling SpringCodeStyleManager");
-			install(((SpringCodeStyleManager) manager).getDelegate());
+	private void update(boolean enabled) {
+		this.lock.lock();
+		try {
+			CodeStyleManager manager = CodeStyleManager.getInstance(this.myProject);
+			PropertiesComponent properties = PropertiesComponent
+					.getInstance(this.myProject);
+			if (manager == null) {
+				logger.warn("Unable to find exiting CodeStyleManager");
+				return;
+			}
+			if (enabled && !(manager instanceof SpringCodeStyleManager)) {
+				logger.debug("Enabling SpringCodeStyleManager");
+				reregisterComponent(new SpringCodeStyleManager(manager));
+				properties.setValue(INSTALLED_PROPERTY, enabled);
+			}
+			if (!enabled && (manager instanceof SpringCodeStyleManager)) {
+				logger.debug("Disabling SpringCodeStyleManager");
+				reregisterComponent(((SpringCodeStyleManager) manager).getDelegate());
+				properties.setValue(INSTALLED_PROPERTY, false);
+			}
+		}
+		finally {
+			this.lock.unlock();
 		}
 	}
 
-	private void install() {
-		CodeStyleManager manager = CodeStyleManager.getInstance(this.myProject);
-		if (manager != null && !(manager instanceof SpringCodeStyleManager)) {
-			logger.debug("Installing SpringCodeStyleManager");
-			install(new SpringCodeStyleManager(manager));
-		}
-	}
-
-	private void install(CodeStyleManager manager) {
+	private void reregisterComponent(CodeStyleManager manager) {
 		MutablePicoContainer container = (MutablePicoContainer) this.myProject
 				.getPicoContainer();
 		container.unregisterComponent(CODE_STYLE_MANAGER_KEY);

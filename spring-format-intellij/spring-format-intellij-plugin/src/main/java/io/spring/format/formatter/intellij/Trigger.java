@@ -14,22 +14,37 @@
  * limitations under the License.
  */
 
-package io.spring.format.formatter.intellij.trigger;
-
-import com.intellij.openapi.project.Project;
+package io.spring.format.formatter.intellij;
 
 /**
- * Strategy used to trigger the installation of the Spring Formatter.
+ * Trigger used to to update the state for this monitor. Triggers are thread safe and can
+ * be called from any active thread.
  *
  * @author Phillip Webb
  */
-public interface InstallTrigger {
+interface Trigger {
 
 	/**
-	 * Determine if the given project should be formatted using Spring's conventions.
-	 * @param project the source project
-	 * @return {@code true} if the project should be formatted using Spring's convetions.
+	 * Update the state of the monitor.
+	 * @param state the updated state
 	 */
-	boolean isSpringFormatted(Project project);
+	void updateState(State state);
+
+	/**
+	 * The desired state of the plugin for this monitor.
+	 */
+	enum State {
+
+		/**
+		 * The plugin should be active.
+		 */
+		ACTIVE,
+
+		/**
+		 * The plugin need not be active.
+		 */
+		NOT_ACTIVE
+
+	}
 
 }
