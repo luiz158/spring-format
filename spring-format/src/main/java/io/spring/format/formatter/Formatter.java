@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 import io.spring.format.formatter.preparator.Preparators;
 import io.spring.formatter.eclipse.formatter.ExtendedCodeFormatter;
@@ -55,7 +56,24 @@ public class Formatter extends CodeFormatter {
 	 */
 	private static final String DEFAULT_LINE_SEPARATOR = null;
 
+	private final boolean nlsWarnings;
+
 	private CodeFormatter delegate = new DelegateCodeFormatter();
+
+	/**
+	 * Create a new formatter instance.
+	 */
+	public Formatter() {
+		this(true);
+	}
+
+	/**
+	 * Create a new formatter instance.
+	 * @param nlsWarnings if NLS warnings should be printed.
+	 */
+	public Formatter(boolean nlsWarnings) {
+		this.nlsWarnings = nlsWarnings;
+	}
 
 	/**
 	 * Format the given source content.
@@ -63,15 +81,17 @@ public class Formatter extends CodeFormatter {
 	 * @return the formatted content
 	 */
 	public String format(String source) {
-		IDocument document = new Document(source);
-		TextEdit textEdit = format(source, 0, source.length());
-		try {
-			textEdit.apply(document);
-		}
-		catch (MalformedTreeException | BadLocationException ex) {
-			throw new IllegalStateException(ex);
-		}
-		return document.get();
+		return nlsSafe(() -> {
+			IDocument document = new Document(source);
+			TextEdit textEdit = format(source, 0, source.length());
+			try {
+				textEdit.apply(document);
+			}
+			catch (MalformedTreeException | BadLocationException ex) {
+				throw new IllegalStateException(ex);
+			}
+			return document.get();
+		});
 	}
 
 	/**
@@ -82,24 +102,17 @@ public class Formatter extends CodeFormatter {
 	 * @return the formatted content
 	 */
 	public TextEdit format(String source, int offset, int length) {
-		String nlsWarnings = System.getProperty("osgi.nls.warnings");
-		try {
-			System.setProperty("osgi.nls.warnings", "ignore");
-			return format(DEFAULT_COMPONENTS, source, offset, length,
-					DEFAULT_INDENTATION_LEVEL, DEFAULT_LINE_SEPARATOR);
-		}
-		finally {
-			if (nlsWarnings != null) {
-				System.setProperty("osgi.nls.warnings", nlsWarnings);
-			}
-		}
+		return nlsSafe(() -> format(DEFAULT_COMPONENTS, source, offset, length,
+				DEFAULT_INDENTATION_LEVEL, DEFAULT_LINE_SEPARATOR));
 	}
 
 	@Override
 	public TextEdit format(int kind, String source, int offset, int length,
 			int indentationLevel, String lineSeparator) {
-		return this.delegate.format(kind, source, offset, length, indentationLevel,
-				lineSeparator);
+		return nlsSafe(() -> {
+			return this.delegate.format(kind, source, offset, length, indentationLevel,
+					lineSeparator);
+		});
 	}
 
 	/**
@@ -109,15 +122,32 @@ public class Formatter extends CodeFormatter {
 	 * @return the formatted content
 	 */
 	public TextEdit format(String source, IRegion[] regions) {
-		return format(DEFAULT_COMPONENTS, source, regions, DEFAULT_INDENTATION_LEVEL,
-				DEFAULT_LINE_SEPARATOR);
+		return nlsSafe(() -> format(DEFAULT_COMPONENTS, source, regions,
+				DEFAULT_INDENTATION_LEVEL, DEFAULT_LINE_SEPARATOR));
 	}
 
 	@Override
 	public TextEdit format(int kind, String source, IRegion[] regions,
 			int indentationLevel, String lineSeparator) {
-		return this.delegate.format(kind, source, regions, indentationLevel,
-				lineSeparator);
+		return nlsSafe(() -> this.delegate.format(kind, source, regions, indentationLevel,
+				lineSeparator));
+	}
+
+	private <T> T nlsSafe(Supplier<T> formatted) {
+		if (this.nlsWarnings) {
+			return formatted.get();
+		}
+		String nlsWarnings = System.getProperty("osgi.nls.warnings");
+		try {
+			System.setProperty("osgi.nls.warnings", "ignore");
+			return formatted.get();
+		}
+		finally {
+			if (nlsWarnings != null) {
+				System.setProperty("osgi.nls.warnings", nlsWarnings);
+			}
+		}
+
 	}
 
 	/**
