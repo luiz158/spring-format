@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package io.spring.format.formatter.intellij;
+package io.spring.format.formatter.intellij.codestyle.monitor;
 
 /**
  * FIXME.
  *
  * @author Phillip Webb
  */
-public class MavenMonitor {
+public class GradleMonitor {
 
 }

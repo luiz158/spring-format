@@ -14,37 +14,13 @@
  * limitations under the License.
  */
 
-package io.spring.format.formatter.intellij;
+package io.spring.format.formatter.intellij.codestyle.monitor;
 
 /**
- * Trigger used to to update the state for this monitor. Triggers are thread safe and can
- * be called from any active thread.
+ * FIXME.
  *
  * @author Phillip Webb
  */
-interface Trigger {
-
-	/**
-	 * Update the state of the monitor.
-	 * @param state the updated state
-	 */
-	void updateState(State state);
-
-	/**
-	 * The desired state of the plugin for this monitor.
-	 */
-	enum State {
-
-		/**
-		 * The plugin should be active.
-		 */
-		ACTIVE,
-
-		/**
-		 * The plugin need not be active.
-		 */
-		NOT_ACTIVE
-
-	}
+public class MavenMonitor {
 
 }

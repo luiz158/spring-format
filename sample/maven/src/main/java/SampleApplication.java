@@ -15,8 +15,8 @@
  */
 
 /**
- * An example application that can be used to manually test the Maven Plugin and
- * IDE integration.
+ * An example application that can be used to manually test the Maven Plugin and IDE
+ * integration.
  *
  * @author Phillip Webb
  */
@@ -24,7 +24,6 @@ public class SampleApplication {
 
 	/**
 	 * Says hello.
-	 *
 	 * @param args the args
 	 */
 	private void sayHello(String[] args) {
@@ -39,6 +38,5 @@ public class SampleApplication {
 	public static void main(String[] args) {
 		new SampleApplication().sayHello(args);
 	}
-
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.format.formatter.intellij;
+package io.spring.format.formatter.intellij.codestyle.monitor;
 
 import com.intellij.openapi.project.Project;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.spring.format.formatter.intellij;
+package io.spring.format.formatter.intellij.codestyle.monitor;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -24,7 +24,7 @@ import com.intellij.openapi.vfs.VirtualFileListener;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.VirtualFileMoveEvent;
 import com.intellij.openapi.vfs.VirtualFilePropertyEvent;
-import io.spring.format.formatter.intellij.Trigger.State;
+import io.spring.format.formatter.intellij.codestyle.monitor.Trigger.State;
 
 /**
  * {@link Monitor} that looks for a {@literal .springformat} file.
@@ -57,7 +57,7 @@ public class FileMonitor extends Monitor {
 	private void check() {
 		VirtualFile baseDir = getProject().getBaseDir();
 		VirtualFile triggerFile = (baseDir == null ? null
-				: baseDir.findChild(".springformat"));
+				: baseDir.findChild(TRIGGER_FILE));
 		State currentState = (triggerFile == null ? State.NOT_ACTIVE : State.ACTIVE);
 		if (!currentState.equals(this.state)) {
 			getTrigger().updateState(currentState);

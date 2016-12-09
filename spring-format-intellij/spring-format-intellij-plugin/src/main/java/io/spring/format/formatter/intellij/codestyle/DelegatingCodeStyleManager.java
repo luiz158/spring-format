@@ -29,6 +29,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.ThrowableRunnable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * {@link CodeStyleManager} implementation that delegates all calls.
@@ -39,7 +40,7 @@ public class DelegatingCodeStyleManager extends CodeStyleManager {
 
 	private final CodeStyleManager delegate;
 
-	public DelegatingCodeStyleManager(CodeStyleManager delegate) {
+	public DelegatingCodeStyleManager(@NotNull CodeStyleManager delegate) {
 		this.delegate = delegate;
 	}
 

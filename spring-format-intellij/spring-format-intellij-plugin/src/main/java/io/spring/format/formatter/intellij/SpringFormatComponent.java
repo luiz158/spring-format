@@ -19,13 +19,14 @@ package io.spring.format.formatter.intellij;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.components.AbstractProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import io.spring.format.formatter.intellij.Trigger.State;
 import io.spring.format.formatter.intellij.codestyle.SpringCodeStyleManager;
+import io.spring.format.formatter.intellij.codestyle.monitor.FileMonitor;
+import io.spring.format.formatter.intellij.codestyle.monitor.Monitors;
+import io.spring.format.formatter.intellij.codestyle.monitor.Trigger.State;
 import org.picocontainer.MutablePicoContainer;
 
 /**
@@ -36,9 +37,6 @@ import org.picocontainer.MutablePicoContainer;
 public class SpringFormatComponent extends AbstractProjectComponent {
 
 	private static final String CODE_STYLE_MANAGER_KEY = CodeStyleManager.class.getName();
-
-	private static final String INSTALLED_PROPERTY = SpringFormatComponent.class.getName()
-			+ ".installed";
 
 	private final Lock lock = new ReentrantLock();
 
@@ -52,18 +50,7 @@ public class SpringFormatComponent extends AbstractProjectComponent {
 
 	@Override
 	public void initComponent() {
-		this.monitors = new Monitors(this.myProject, FileMonitor.factory()) {
-
-			@Override
-			protected void changeState(State state) {
-				System.out.println("State changed " + state);
-			}
-
-		};
-
-		// PropertiesComponent properties =
-		// PropertiesComponent.getInstance(this.myProject);
-		// update(properties.getBoolean(INSTALLED_PROPERTY, false));
+		this.monitors = new Monitors(this.myProject, this::update, FileMonitor.factory());
 	}
 
 	@Override
@@ -74,25 +61,22 @@ public class SpringFormatComponent extends AbstractProjectComponent {
 		}
 	}
 
-	private void update(boolean enabled) {
+	private void update(State state) {
 		this.lock.lock();
 		try {
 			CodeStyleManager manager = CodeStyleManager.getInstance(this.myProject);
-			PropertiesComponent properties = PropertiesComponent
-					.getInstance(this.myProject);
 			if (manager == null) {
 				logger.warn("Unable to find exiting CodeStyleManager");
 				return;
 			}
-			if (enabled && !(manager instanceof SpringCodeStyleManager)) {
+			if (state == State.ACTIVE && !(manager instanceof SpringCodeStyleManager)) {
 				logger.debug("Enabling SpringCodeStyleManager");
 				reregisterComponent(new SpringCodeStyleManager(manager));
-				properties.setValue(INSTALLED_PROPERTY, enabled);
 			}
-			if (!enabled && (manager instanceof SpringCodeStyleManager)) {
+			if (state == State.NOT_ACTIVE
+					&& (manager instanceof SpringCodeStyleManager)) {
 				logger.debug("Disabling SpringCodeStyleManager");
 				reregisterComponent(((SpringCodeStyleManager) manager).getDelegate());
-				properties.setValue(INSTALLED_PROPERTY, false);
 			}
 		}
 		finally {

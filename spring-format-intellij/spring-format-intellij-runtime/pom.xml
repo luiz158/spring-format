@@ -75,6 +75,7 @@
 										<include name="${intellij.source.root}/platform/core-api/src/**" />
 										<include name="${intellij.source.root}/platform/util/src/**" />
 										<include name="${intellij.source.root}/platform/extensions/src/**" />
+										<include name="${intellij.source.root}/platform/annotations/common/src/**" />
 										<include name="${intellij.source.root}/plugins/maven/src/**" />
 									</patternset>
 								</unzip>
@@ -87,6 +88,9 @@
 								<zip
 									destfile="${project.build.directory}/intellij-source/extensions-sources.zip"
 									basedir="${project.build.directory}/intellij-source/${intellij.source.root}/platform/extensions/src" />
+								<zip
+									destfile="${project.build.directory}/intellij-source/annotations-sources.zip"
+									basedir="${project.build.directory}/intellij-source/${intellij.source.root}/platform/annotations/common/src" />
 								<zip
 									destfile="${project.build.directory}/intellij-source/maven-sources.zip"
 									basedir="${project.build.directory}/intellij-source/${intellij.source.root}/plugins/maven/src" />
@@ -145,6 +149,23 @@
 							<sources>${project.build.directory}/intellij-source/extensions-sources.zip</sources>
 							<groupId>io.spring.format.intellij</groupId>
 							<artifactId>extensions</artifactId>
+							<version>${project.version}</version>
+							<packaging>jar</packaging>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-intellij-annotations</id>
+						<phase>install</phase>
+						<inherited>false</inherited>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<file>${project.build.directory}/intellij/annotations.jar</file>
+							<sources>${project.build.directory}/intellij-source/annotations-sources.zip</sources>
+							<groupId>io.spring.format.intellij</groupId>
+							<artifactId>annotations</artifactId>
 							<version>${project.version}</version>
 							<packaging>jar</packaging>
 							<generatePom>true</generatePom>

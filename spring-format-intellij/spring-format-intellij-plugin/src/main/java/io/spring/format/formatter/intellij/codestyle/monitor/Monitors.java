@@ -14,32 +14,38 @@
  * limitations under the License.
  */
 
-package io.spring.format.formatter.intellij;
+package io.spring.format.formatter.intellij.codestyle.monitor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.intellij.openapi.project.Project;
-import io.spring.format.formatter.intellij.Trigger.State;
+import io.spring.format.formatter.intellij.codestyle.monitor.Trigger.State;
 
 /**
  * FIXME.
  *
  * @author Phillip Webb
  */
-public abstract class Monitors {
+public class Monitors {
+
+	private final Consumer<State> stateConsumer;
 
 	private final List<Monitor> monitors;
 
 	private final List<State> states = new ArrayList<State>();
 
-	public Monitors(Project project, Monitor.Factory... monitorFactories) {
-		this(project, Arrays.asList(monitorFactories));
+	public Monitors(Project project, Consumer<State> stateConsumer,
+			Monitor.Factory... monitorFactories) {
+		this(project, stateConsumer, Arrays.asList(monitorFactories));
 	}
 
-	public Monitors(Project project, List<Monitor.Factory> monitorFactories) {
+	public Monitors(Project project, Consumer<State> stateConsumer,
+			List<Monitor.Factory> monitorFactories) {
+		this.stateConsumer = stateConsumer;
 		List<Monitor> monitors = new ArrayList<>(monitorFactories.size());
 		for (Monitor.Factory factory : monitorFactories) {
 			monitors.add(factory.createMonitor(project, addTrigger()));
@@ -59,7 +65,7 @@ public abstract class Monitors {
 				activeAfter = this.states.stream().anyMatch(item -> item == State.ACTIVE);
 			}
 			if (activeBefore != activeAfter) {
-				changeState(activeAfter ? State.ACTIVE : State.NOT_ACTIVE);
+				this.stateConsumer.accept(activeAfter ? State.ACTIVE : State.NOT_ACTIVE);
 			}
 		};
 	}
@@ -76,7 +82,5 @@ public abstract class Monitors {
 			monitor.stop();
 		}
 	}
-
-	protected abstract void changeState(State state);
 
 }
