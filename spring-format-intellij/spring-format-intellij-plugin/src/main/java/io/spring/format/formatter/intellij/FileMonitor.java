@@ -19,12 +19,12 @@ package io.spring.format.formatter.intellij;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileAdapter;
-import com.intellij.openapi.vfs.VirtualFileCopyEvent;
 import com.intellij.openapi.vfs.VirtualFileEvent;
 import com.intellij.openapi.vfs.VirtualFileListener;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.vfs.VirtualFileMoveEvent;
 import com.intellij.openapi.vfs.VirtualFilePropertyEvent;
+import io.spring.format.formatter.intellij.Trigger.State;
 
 /**
  * {@link Monitor} that looks for a {@literal .springformat} file.
@@ -39,16 +39,14 @@ public class FileMonitor extends Monitor {
 
 	private final VirtualFileListener listener;
 
+	private State state;
+
 	public FileMonitor(Project project, Trigger trigger, VirtualFileManager fileManager) {
 		super(project, trigger);
 		this.fileManager = fileManager;
 		this.listener = new Listener();
 		fileManager.addVirtualFileListener(this.listener);
-		VirtualFile baseDir = project.getBaseDir();
-		VirtualFile triggerFile = (baseDir == null ? null
-				: baseDir.findChild(".springformat"));
-		trigger.updateState(
-				triggerFile == null ? Trigger.State.NOT_ACTIVE : Trigger.State.ACTIVE);
+		check();
 	}
 
 	@Override
@@ -56,22 +54,15 @@ public class FileMonitor extends Monitor {
 		this.fileManager.removeVirtualFileListener(this.listener);
 	}
 
-	private void fileAdded(VirtualFile file) {
-		if (isTriggerFile(file) && file.isValid()) {
-			getTrigger().updateState(Trigger.State.ACTIVE);
+	private void check() {
+		VirtualFile baseDir = getProject().getBaseDir();
+		VirtualFile triggerFile = (baseDir == null ? null
+				: baseDir.findChild(".springformat"));
+		State currentState = (triggerFile == null ? State.NOT_ACTIVE : State.ACTIVE);
+		if (!currentState.equals(this.state)) {
+			getTrigger().updateState(currentState);
+			this.state = currentState;
 		}
-	}
-
-	private void fileRemoved(VirtualFile file) {
-		if (isTriggerFile(file)) {
-			getTrigger().updateState(Trigger.State.NOT_ACTIVE);
-		}
-	}
-
-	private boolean isTriggerFile(VirtualFile file) {
-		VirtualFile parent = (file == null ? null : file.getParent());
-		return (parent != null && parent.equals(getProject().getBaseDir())
-				&& TRIGGER_FILE.equals(file.getName()));
 	}
 
 	public static Factory factory() {
@@ -83,27 +74,22 @@ public class FileMonitor extends Monitor {
 
 		@Override
 		public void fileCreated(VirtualFileEvent event) {
-			fileAdded(event.getFile());
-		}
-
-		@Override
-		public void fileCopied(VirtualFileCopyEvent event) {
-			fileAdded(event.getFile());
+			check();
 		}
 
 		@Override
 		public void fileDeleted(VirtualFileEvent event) {
-			fileRemoved(event.getFile());
+			check();
 		}
 
 		@Override
 		public void fileMoved(VirtualFileMoveEvent event) {
-			fileRemoved(event.getFile());
+			check();
 		}
 
 		@Override
 		public void propertyChanged(VirtualFilePropertyEvent event) {
-			// FIXME
+			check();
 		}
 
 	}
