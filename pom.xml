@@ -21,6 +21,9 @@
 		<tycho.version>0.26.0</tycho.version>
 		<tycho-extras.version>0.26.0</tycho-extras.version>
 	</properties>
+	<prerequisites>
+		<maven>3.2</maven>
+	</prerequisites>
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -61,8 +64,18 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>3.0.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.5.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>2.8.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -81,6 +94,11 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.0.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-plugin-plugin</artifactId>
 					<version>3.5</version>
 				</plugin>
@@ -88,6 +106,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
 					<version>2.4.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.5.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -111,7 +134,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.4.3</version>
+					<version>2.6</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -122,6 +145,14 @@
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-surefire-plugin</artifactId>
 					<version>${tycho.version}</version>
+										<configuration>
+						<useUIHarness>true</useUIHarness>
+						<includes>
+							<include>**/*Test.java</include>
+						</includes>
+						<argLine>${ui.test.vmargs}</argLine>
+						<forkedProcessTimeoutInSeconds>7200</forkedProcessTimeoutInSeconds>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -134,6 +165,13 @@
 							<version>${tycho-extras.version}</version>
 						</dependency>
 					</dependencies>
+					<configuration>
+						<timestampProvider>jgit</timestampProvider>
+						<jgit.ignore>
+							pom.xml
+						</jgit.ignore>
+						<jgit.dirtyWorkingTree>warning</jgit.dirtyWorkingTree>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>

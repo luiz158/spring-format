@@ -10,37 +10,6 @@
 	<artifactId>spring-format-eclipse</artifactId>
 	<packaging>pom</packaging>
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-surefire-plugin</artifactId>
-					<configuration>
-						<useUIHarness>true</useUIHarness>
-						<includes>
-							<include>**/*Test.java</include>
-						</includes>
-						<argLine>${ui.test.vmargs}</argLine>
-						<forkedProcessTimeoutInSeconds>7200</forkedProcessTimeoutInSeconds>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-packaging-plugin</artifactId>
-					<configuration>
-						<timestampProvider>jgit</timestampProvider>
-						<jgit.ignore>
-							pom.xml
-						</jgit.ignore>
-						<jgit.dirtyWorkingTree>warning</jgit.dirtyWorkingTree>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.eclipse.tycho</groupId>
-					<artifactId>tycho-p2-repository-plugin</artifactId>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
