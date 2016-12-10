@@ -47,7 +47,7 @@ public class FormatterTests {
 	public FormatterTests(File source, File expected) {
 		this.source = source;
 		this.expected = expected;
-		this.formatter = new Formatter();
+		this.formatter = new Formatter(false);
 	}
 
 	@Test

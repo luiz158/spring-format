@@ -70,6 +70,9 @@ public class FileMonitor extends Monitor {
 				VirtualFileManager.getInstance());
 	}
 
+	/**
+	 * Lister used to check for trigger file updates.
+	 */
 	private class Listener extends VirtualFileAdapter {
 
 		@Override

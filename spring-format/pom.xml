@@ -15,12 +15,10 @@
 		<dependency>
 			<groupId>io.spring.format</groupId>
 			<artifactId>spring-format-eclipse-formatter</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.spring.format</groupId>
 			<artifactId>spring-format-eclipse-runtime</artifactId>
-			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

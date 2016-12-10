@@ -16,61 +16,51 @@
 		<dependency>
 			<groupId>io.spring.format</groupId>
 			<artifactId>spring-format</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.spring.format</groupId>
 			<artifactId>spring-format-eclipse-runtime</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<!-- Provided -->
 		<dependency>
 			<groupId>io.spring.format</groupId>
 			<artifactId>spring-format-intellij-runtime</artifactId>
-			<version>${project.version}</version>
 			<type>pom</type>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.spring.format.intellij</groupId>
 			<artifactId>annotations</artifactId>
-			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.spring.format.intellij</groupId>
 			<artifactId>extensions</artifactId>
-			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.spring.format.intellij</groupId>
 			<artifactId>openapi</artifactId>
-			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.spring.format.intellij</groupId>
 			<artifactId>util</artifactId>
-			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.spring.format.intellij</groupId>
 			<artifactId>maven</artifactId>
-			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.trove4j</groupId>
 			<artifactId>trove4j</artifactId>
-			<version>2.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.picocontainer</groupId>
 			<artifactId>picocontainer</artifactId>
-			<version>1.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Test -->
