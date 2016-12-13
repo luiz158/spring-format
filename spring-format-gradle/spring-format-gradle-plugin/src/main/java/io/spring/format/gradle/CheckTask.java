@@ -17,9 +17,11 @@
 package io.spring.format.gradle;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import io.spring.format.formatter.FileEdit;
+import io.spring.format.formatter.FileFormatter;
 import org.gradle.api.GradleException;
 
 /**
@@ -35,10 +37,9 @@ public class CheckTask extends FormatterTask {
 
 	@Override
 	public void run() throws Exception {
-		List<File> problems = new ArrayList<>();
-		format((file, content, edit) -> {
-			problems.add(file);
-		});
+		List<File> problems = new FileFormatter(false)
+				.formatFiles(this.files, this.encoding).filter(FileEdit::hasEdits)
+				.map(FileEdit::getFile).collect(Collectors.toList());
 		if (!problems.isEmpty()) {
 			StringBuilder message = new StringBuilder(
 					"Formatting violations found in the following files:\n");

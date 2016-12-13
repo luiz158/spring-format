@@ -17,52 +17,37 @@
 package io.spring.format.formatter;
 
 import java.io.File;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collection;
 
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.text.edits.TextEdit;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link Formatter}.
  */
-@RunWith(Parameterized.class)
-public class FormatterTests {
-
-	private static final Charset UTF8 = Charset.forName("UTF-8");
-
-	private final File source;
-
-	private final File expected;
+public class FormatterTests extends AbstractFormatterTests {
 
 	public FormatterTests(File source, File expected) {
-		this.source = source;
-		this.expected = expected;
+		super(source, expected);
 	}
 
 	@Test
 	public void format() throws Exception {
-		String sourceContent = read(this.source);
-		String expectedContent = read(this.expected);
+		String sourceContent = read(getSource());
+		String expectedContent = read(getExpected());
 		String formattedContent = format(sourceContent);
 		if (!expectedContent.equals(formattedContent)) {
 			System.out.println(
-					"Formatted " + this.source + " does not match " + this.expected);
-			print("Source " + this.source, sourceContent);
-			print("Expected +" + this.expected, expectedContent);
+					"Formatted " + getSource() + " does not match " + getExpected());
+			print("Source " + getSource(), sourceContent);
+			print("Expected +" + getExpected(), expectedContent);
 			print("Got", formattedContent);
 			System.out.println("========================================");
 			assertThat(expectedContent).isEqualTo(formattedContent)
-					.describedAs("Formatted content does not match for " + this.source);
+					.describedAs("Formatted content does not match for " + getSource());
 		}
 	}
 
@@ -71,32 +56,6 @@ public class FormatterTests {
 		TextEdit textEdit = new Formatter(false).format(sourceContent);
 		textEdit.apply(document);
 		return document.get();
-	}
-
-	private void print(String name, String content) {
-		System.out.println(name + ":");
-		System.out.println();
-		System.out.println("----------------------------------------");
-		System.out.println(content);
-		System.out.println("----------------------------------------");
-		System.out.println();
-		System.out.println();
-	}
-
-	private String read(File file) throws Exception {
-		return new String(Files.readAllBytes(file.toPath()), UTF8);
-	}
-
-	@Parameters(name = "{0}")
-	public static Collection<Object[]> files() {
-		Collection<Object[]> files = new ArrayList<>();
-		File sourceDir = new File("src/test/resources/source");
-		File expectedDir = new File("src/test/resources/expected");
-		for (File source : sourceDir.listFiles((dir, name) -> !name.startsWith("."))) {
-			File expected = new File(expectedDir, source.getName());
-			files.add(new Object[] { source, expected });
-		}
-		return files;
 	}
 
 }

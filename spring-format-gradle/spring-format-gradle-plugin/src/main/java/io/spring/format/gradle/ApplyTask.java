@@ -16,12 +16,9 @@
 
 package io.spring.format.gradle;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IDocument;
+import io.spring.format.formatter.FileEdit;
+import io.spring.format.formatter.FileFormatter;
+import io.spring.format.formatter.FileFormatterException;
 import org.gradle.api.GradleException;
 
 /**
@@ -37,17 +34,13 @@ public class ApplyTask extends FormatterTask {
 
 	@Override
 	public void run() throws Exception {
-		format((file, content, edit) -> {
-			IDocument document = new Document(content);
-			edit.apply(document);
-			Files.write(file.toPath(), document.get().getBytes(this.encoding),
-					StandardOpenOption.TRUNCATE_EXISTING);
-		});
-	}
-
-	@Override
-	protected void onError(File file, Exception cause) {
-		throw new GradleException("Unable to format file " + file, cause);
+		try {
+			new FileFormatter(false).formatFiles(this.files, this.encoding)
+					.filter(FileEdit::hasEdits).forEach(FileEdit::save);
+		}
+		catch (FileFormatterException ex) {
+			throw new GradleException("Unable to format file " + ex.getFile(), ex);
+		}
 	}
 
 }
