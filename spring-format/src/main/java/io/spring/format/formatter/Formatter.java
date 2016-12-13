@@ -18,6 +18,7 @@ package io.spring.format.formatter;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Supplier;
@@ -26,11 +27,7 @@ import io.spring.format.formatter.preparator.Preparators;
 import io.spring.formatter.eclipse.formatter.ExtendedCodeFormatter;
 import io.spring.formatter.eclipse.formatter.Preparator;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
 /**
@@ -78,20 +75,10 @@ public class Formatter extends CodeFormatter {
 	/**
 	 * Format the given source content.
 	 * @param source the source content to format
-	 * @return the formatted content
+	 * @return the text edit
 	 */
-	public String format(String source) {
-		return nlsSafe(() -> {
-			IDocument document = new Document(source);
-			TextEdit textEdit = format(source, 0, source.length());
-			try {
-				textEdit.apply(document);
-			}
-			catch (MalformedTreeException | BadLocationException ex) {
-				throw new IllegalStateException(ex);
-			}
-			return document.get();
-		});
+	public TextEdit format(String source) {
+		return format(source, 0, source.length());
 	}
 
 	/**
@@ -99,11 +86,11 @@ public class Formatter extends CodeFormatter {
 	 * @param source the source content to format
 	 * @param offset the offset to start formatting
 	 * @param length the length to format
-	 * @return the formatted content
+	 * @return the text edit
 	 */
 	public TextEdit format(String source, int offset, int length) {
-		return nlsSafe(() -> format(DEFAULT_COMPONENTS, source, offset, length,
-				DEFAULT_INDENTATION_LEVEL, DEFAULT_LINE_SEPARATOR));
+		return format(DEFAULT_COMPONENTS, source, offset, length,
+				DEFAULT_INDENTATION_LEVEL, DEFAULT_LINE_SEPARATOR);
 	}
 
 	@Override
@@ -119,11 +106,11 @@ public class Formatter extends CodeFormatter {
 	 * Format specific subsections of the given source content.
 	 * @param source the source content to format
 	 * @param regions the regions to format
-	 * @return the formatted content
+	 * @return the text edit
 	 */
 	public TextEdit format(String source, IRegion[] regions) {
-		return nlsSafe(() -> format(DEFAULT_COMPONENTS, source, regions,
-				DEFAULT_INDENTATION_LEVEL, DEFAULT_LINE_SEPARATOR));
+		return format(DEFAULT_COMPONENTS, source, regions, DEFAULT_INDENTATION_LEVEL,
+				DEFAULT_LINE_SEPARATOR);
 	}
 
 	@Override
@@ -154,27 +141,29 @@ public class Formatter extends CodeFormatter {
 	 * Internal delegate code formatter to apply Spring {@literal formatter.prefs} and add
 	 * {@link Preparator Preparators}.
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static class DelegateCodeFormatter extends ExtendedCodeFormatter {
 
-		DelegateCodeFormatter() {
-			super(loadOptions());
-			for (Preparator preparator : new Preparators()) {
-				addPreparator(preparator);
-			}
-		}
+		static Map<String, String> OPTIONS;
 
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		private static Map<String, String> loadOptions() {
+		static {
 			try {
 				Properties properties = new Properties();
 				try (InputStream inputStream = Formatter.class
 						.getResourceAsStream("formatter.prefs")) {
 					properties.load(inputStream);
-					return (Map) properties;
+					OPTIONS = (Map) Collections.unmodifiableMap(properties);
 				}
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException(ex);
+			}
+		}
+
+		DelegateCodeFormatter() {
+			super(OPTIONS);
+			for (Preparator preparator : new Preparators()) {
+				addPreparator(preparator);
 			}
 		}
 

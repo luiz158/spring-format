@@ -15,9 +15,23 @@
  */
 
 package io.spring.format.gradle;
+
+import java.io.File;
+import java.nio.charset.Charset;
+
 /**
- * @author pwebb
+ * {@link FormatterTask} to apply formatting.
+ *
+ * @author Phillip Webb
  */
-public class SpringFormatPlugin {
+public class ApplyTask extends FormatterTask {
+
+	static final String NAME = "springFormatApply";
+
+	static final String DESCRIPTION = "Formats Java source code using Spring conventions";
+
+	@Override
+	protected void apply(Iterable<File> files, Charset charset) {
+	}
 
 }

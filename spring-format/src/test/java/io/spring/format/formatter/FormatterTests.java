@@ -16,15 +16,15 @@
 
 package io.spring.format.formatter;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.text.edits.TextEdit;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -38,23 +38,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(Parameterized.class)
 public class FormatterTests {
 
+	private static final Charset UTF8 = Charset.forName("UTF-8");
+
 	private final File source;
 
 	private final File expected;
 
-	private final Formatter formatter;
-
 	public FormatterTests(File source, File expected) {
 		this.source = source;
 		this.expected = expected;
-		this.formatter = new Formatter(false);
 	}
 
 	@Test
 	public void format() throws Exception {
 		String sourceContent = read(this.source);
 		String expectedContent = read(this.expected);
-		String formattedContent = this.formatter.format(sourceContent);
+		String formattedContent = format(sourceContent);
 		if (!expectedContent.equals(formattedContent)) {
 			System.out.println(
 					"Formatted " + this.source + " does not match " + this.expected);
@@ -65,6 +64,13 @@ public class FormatterTests {
 			assertThat(expectedContent).isEqualTo(formattedContent)
 					.describedAs("Formatted content does not match for " + this.source);
 		}
+	}
+
+	private String format(String sourceContent) throws Exception {
+		IDocument document = new Document(sourceContent);
+		TextEdit textEdit = new Formatter(false).format(sourceContent);
+		textEdit.apply(document);
+		return document.get();
 	}
 
 	private void print(String name, String content) {
@@ -78,24 +84,7 @@ public class FormatterTests {
 	}
 
 	private String read(File file) throws Exception {
-		InputStream inputStream = new FileInputStream(file);
-		try {
-			return read(inputStream);
-		}
-		finally {
-			inputStream.close();
-		}
-	}
-
-	private String read(InputStream inputStream)
-			throws IOException, UnsupportedEncodingException {
-		ByteArrayOutputStream result = new ByteArrayOutputStream();
-		byte[] buffer = new byte[1024];
-		int length;
-		while ((length = inputStream.read(buffer)) != -1) {
-			result.write(buffer, 0, length);
-		}
-		return result.toString("UTF-8");
+		return new String(Files.readAllBytes(file.toPath()), UTF8);
 	}
 
 	@Parameters(name = "{0}")
