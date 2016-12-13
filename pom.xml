@@ -17,6 +17,7 @@
 		<mockito.version>2.2.29</mockito.version>
 		<junit.version>4.12</junit.version>
 		<picocontainer.version>1.2</picocontainer.version>
+		<system-rules.version>1.16.0</system-rules.version>
 		<trove4j.version>2.1.0</trove4j.version>
 		<tycho.version>0.26.0</tycho.version>
 		<tycho-extras.version>0.26.0</tycho-extras.version>

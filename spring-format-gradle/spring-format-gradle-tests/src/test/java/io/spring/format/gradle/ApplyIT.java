@@ -16,38 +16,31 @@
 
 package io.spring.format.gradle;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import org.gradle.tooling.BuildException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@literal gradle springFormatCheck}.
+ * Integration tests for {@literal gradle springFormatApply}.
  *
  * @author Phillip Webb
  */
-public class CheckIT {
+public class ApplyIT {
 
 	@Test
-	public void checkValid() throws Exception {
-		new ProjectCreator().run("check-valid", "springFormatCheck");
-	}
-
-	@Test
-	public void checkInvalid() throws Exception {
-		try {
-			new ProjectCreator().run("check-invalid", "springFormatCheck");
-		}
-		catch (BuildException ex) {
-			// Expected
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			ex.printStackTrace(new PrintStream(out));
-			assertThat(out.toString()).contains("Formatting violations found")
-					.contains("Simple.java");
-		}
+	public void apply() throws Exception {
+		new ProjectCreator().run("apply", "springFormatApply");
+		String location = "src/main/java/simple/Simple.java";
+		Path original = Paths.get("src/test/resources/apply/" + location);
+		Path formatted = Paths.get("target/apply/" + location);
+		Path expected = Paths.get("src/test/resources/check-valid/" + location);
+		assertThat(Files.readAllLines(formatted))
+				.isNotEqualTo(Files.readAllLines(original))
+				.isEqualTo(Files.readAllLines(expected));
 	}
 
 }
