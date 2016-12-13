@@ -421,6 +421,6 @@
 		<module>spring-format-eclipse</module>
 		<module>spring-format-gradle</module>
 		<module>spring-format-intellij</module>
-		<module>spring-format-maven-plugin</module>
+		<module>spring-format-maven</module>
 	</modules>
 </project>

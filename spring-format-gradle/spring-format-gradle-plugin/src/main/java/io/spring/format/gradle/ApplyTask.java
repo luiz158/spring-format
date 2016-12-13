@@ -17,14 +17,11 @@
 package io.spring.format.gradle;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 
-import io.spring.format.formatter.Formatter;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.text.edits.TextEdit;
 import org.gradle.api.GradleException;
 
 /**
@@ -39,23 +36,18 @@ public class ApplyTask extends FormatterTask {
 	static final String DESCRIPTION = "Formats Java source code using Spring conventions";
 
 	@Override
-	protected void apply(Iterable<File> files, Charset encoding) throws Exception {
-		for (File file : files) {
-			byte[] bytes = Files.readAllBytes(file.toPath());
-			String content = new String(bytes, encoding);
-			try {
-				TextEdit edit = new Formatter(false).format(content);
-				if (edit.hasChildren() || edit.getLength() > 0) {
-					IDocument document = new Document(content);
-					edit.apply(document);
-					Files.write(file.toPath(), document.get().getBytes(encoding),
-							StandardOpenOption.TRUNCATE_EXISTING);
-				}
-			}
-			catch (Exception ex) {
-				throw new GradleException("Unable to format file " + file, ex);
-			}
-		}
+	public void run() throws Exception {
+		format((file, content, edit) -> {
+			IDocument document = new Document(content);
+			edit.apply(document);
+			Files.write(file.toPath(), document.get().getBytes(this.encoding),
+					StandardOpenOption.TRUNCATE_EXISTING);
+		});
+	}
+
+	@Override
+	protected void onError(File file, Exception cause) {
+		throw new GradleException("Unable to format file " + file, cause);
 	}
 
 }

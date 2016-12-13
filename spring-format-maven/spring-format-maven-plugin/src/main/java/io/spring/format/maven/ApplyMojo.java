@@ -25,7 +25,7 @@ import org.apache.maven.plugin.MojoFailureException;
  *
  * @author Phillip Webb
  */
-public class FormatMojo extends AbstractMojo {
+public class ApplyMojo extends AbstractMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {

@@ -17,13 +17,9 @@
 package io.spring.format.gradle;
 
 import java.io.File;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.spring.format.formatter.Formatter;
-import org.eclipse.text.edits.TextEdit;
 import org.gradle.api.GradleException;
 
 /**
@@ -38,16 +34,11 @@ public class CheckTask extends FormatterTask {
 	static final String DESCRIPTION = "Checks Java source code formatting against Spring conventions";
 
 	@Override
-	protected void apply(Iterable<File> files, Charset encoding) throws Exception {
+	public void run() throws Exception {
 		List<File> problems = new ArrayList<>();
-		for (File file : files) {
-			byte[] bytes = Files.readAllBytes(file.toPath());
-			String content = new String(bytes, encoding);
-			TextEdit edit = new Formatter(false).format(content);
-			if (edit.hasChildren() || edit.getLength() > 0) {
-				problems.add(file);
-			}
-		}
+		format((file, content, edit) -> {
+			problems.add(file);
+		});
 		if (!problems.isEmpty()) {
 			StringBuilder message = new StringBuilder(
 					"Formatting violations found in the following files:\n");

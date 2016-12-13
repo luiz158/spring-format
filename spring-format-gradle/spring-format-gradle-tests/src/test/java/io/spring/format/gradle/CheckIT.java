@@ -50,4 +50,18 @@ public class CheckIT {
 		}
 	}
 
+	@Test
+	public void checkInvalidBuild() throws Exception {
+		try {
+			new ProjectCreator().run("check-invalid", "build");
+		}
+		catch (BuildException ex) {
+			// Expected
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			ex.printStackTrace(new PrintStream(out));
+			assertThat(out.toString()).contains("Formatting violations found")
+					.contains("Simple.java");
+		}
+	}
+
 }
