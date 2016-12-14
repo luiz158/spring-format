@@ -37,7 +37,7 @@ public class FileFormatterTests extends AbstractFormatterTests {
 
 	@Test
 	public void formatFilesFromIteratorShouldFormatFile() throws Exception {
-		FileEdit edit = new FileFormatter(false)
+		FileEdit edit = new FileFormatter()
 				.formatFiles(Arrays.asList(getSource()), StandardCharsets.UTF_8)
 				.findFirst().get();
 		assertThat(edit.getFormattedContent()).isEqualTo(read(getExpected()));
@@ -45,7 +45,7 @@ public class FileFormatterTests extends AbstractFormatterTests {
 
 	@Test
 	public void formatFilesFromStreamShouldFormatFile() throws Exception {
-		FileEdit edit = new FileFormatter(false)
+		FileEdit edit = new FileFormatter()
 				.formatFiles(Arrays.asList(getSource()).stream(), StandardCharsets.UTF_8)
 				.findFirst().get();
 		assertThat(edit.getFormattedContent()).isEqualTo(read(getExpected()));
@@ -53,7 +53,7 @@ public class FileFormatterTests extends AbstractFormatterTests {
 
 	@Test
 	public void formatFileShouldFormatFile() throws Exception {
-		FileEdit edit = new FileFormatter(false).formatFile(getSource(),
+		FileEdit edit = new FileFormatter().formatFile(getSource(),
 				StandardCharsets.UTF_8);
 		assertThat(edit.getFormattedContent()).isEqualTo(read(getExpected()));
 	}

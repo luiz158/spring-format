@@ -39,8 +39,8 @@ public class FileFormatter {
 		this(new Formatter());
 	}
 
-	public FileFormatter(boolean nlsWarnings) {
-		this(new Formatter(nlsWarnings));
+	public FileFormatter(FormatterOption... options) {
+		this(new Formatter(options));
 	}
 
 	public FileFormatter(Formatter formatter) {

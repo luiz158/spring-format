@@ -44,8 +44,6 @@ public class CodeLineBreakPreparator implements Preparator {
 
 	private class Vistor extends ASTVisitor {
 
-		private static final int ANY_TOKEN = -1;
-
 		private final TokenManager tokenManager;
 
 		Vistor(TokenManager tokenManager) {
@@ -86,39 +84,16 @@ public class CodeLineBreakPreparator implements Preparator {
 			closeBraceToken.putLineBreaksBefore(2);
 		}
 
-		// @Override
-		// public boolean visit(FieldDeclaration node) {
-		// int typeIndex = this.tokenManager.firstIndexIn(node.getType(), ANY_TOKEN);
-		// int firstIndexInLine = this.tokenManager.findFirstTokenInLine(typeIndex);
-		// int lastIndex = this.tokenManager.lastIndexIn(node, ANY_TOKEN);
-		// lastIndex = Math.min(lastIndex, this.tokenManager.size() - 2);
-		// for (int i = firstIndexInLine; i <= lastIndex; i++) {
-		// Token token = this.tokenManager.get(i);
-		// Token next = this.tokenManager.get(i + 1);
-		// // boolean lineBreak = token.getLineBreaksAfter() > 0
-		// // || next.getLineBreaksBefore() > 0;
-		// // if (lineBreak) {
-		// // if (token.tokenType == TokenNameCOMMENT_BLOCK) {
-		// // token.setAlign(maxCommentAlign);
-		// // }
-		// // else {
-		// // this.tm.addNLSAlignIndex(i, maxCommentAlign);
-		// // }
-		// // }
-		// // else if (next.tokenType == TokenNameCOMMENT_LINE
-		// // || (next.tokenType == TokenNameCOMMENT_BLOCK && i == lastIndex)) {
-		// // next.setAlign(maxCommentAlign);
-		// // }
-		// }
-		// return true;
-		// }
-
 		@Override
 		public boolean visit(FieldDeclaration node) {
 			int index = this.tokenManager.lastIndexIn(node,
 					TerminalTokens.TokenNameSEMICOLON);
 			while (tokenIsOfType(index + 1, TerminalTokens.TokenNameCOMMENT_LINE,
 					TerminalTokens.TokenNameCOMMENT_BLOCK)) {
+				if (this.tokenManager.get(index).getLineBreaksAfter() > 0
+						|| this.tokenManager.get(index + 1).getLineBreaksBefore() > 0) {
+					break;
+				}
 				index++;
 			}
 			Token token = this.tokenManager.get(index);

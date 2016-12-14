@@ -39,7 +39,8 @@ public class ValidateMojo extends FormatMojo {
 	@Override
 	protected void execute(List<File> files, Charset encoding)
 			throws MojoExecutionException, MojoFailureException {
-		List<File> problems = new FileFormatter(false).formatFiles(files, encoding)
+		FileFormatter formatter = new FileFormatter();
+		List<File> problems = formatter.formatFiles(files, encoding)
 				.filter(FileEdit::hasEdits).map(FileEdit::getFile)
 				.collect(Collectors.toList());
 		if (!problems.isEmpty()) {

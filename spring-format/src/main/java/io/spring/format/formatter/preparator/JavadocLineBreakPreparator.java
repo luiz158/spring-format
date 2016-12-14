@@ -29,6 +29,7 @@ import org.eclipse.jdt.core.dom.Comment;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.TagElement;
+import org.eclipse.jdt.core.dom.TextElement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
 
@@ -79,6 +80,8 @@ class JavadocLineBreakPreparator implements Preparator {
 
 		private boolean firstTagElement;
 
+		private boolean hasText;
+
 		Vistor(TokenManager tokenManager) {
 			this.tokenManager = tokenManager;
 		}
@@ -92,6 +95,13 @@ class JavadocLineBreakPreparator implements Preparator {
 					this.tokenManager);
 			this.declaration = node.getParent();
 			this.firstTagElement = true;
+			this.hasText = false;
+			return true;
+		}
+
+		@Override
+		public boolean visit(TextElement node) {
+			this.hasText = true;
 			return true;
 		}
 
@@ -103,7 +113,7 @@ class JavadocLineBreakPreparator implements Preparator {
 				Token token = this.commentTokenManager.get(startIndex);
 				token.clearLineBreaksBefore();
 				token.putLineBreaksBefore(this.declaration instanceof TypeDeclaration
-						&& this.firstTagElement ? 2 : 1);
+						&& this.firstTagElement && this.hasText ? 2 : 1);
 				this.firstTagElement = false;
 			}
 			return true;

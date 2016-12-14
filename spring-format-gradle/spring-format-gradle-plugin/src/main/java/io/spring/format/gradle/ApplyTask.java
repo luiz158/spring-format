@@ -35,7 +35,8 @@ public class ApplyTask extends FormatterTask {
 	@Override
 	public void run() throws Exception {
 		try {
-			new FileFormatter(false).formatFiles(this.files, this.encoding)
+			FileFormatter formatter = new FileFormatter();
+			formatter.formatFiles(this.files, this.encoding)
 					.filter(FileEdit::hasEdits).forEach(FileEdit::save);
 		}
 		catch (FileFormatterException ex) {

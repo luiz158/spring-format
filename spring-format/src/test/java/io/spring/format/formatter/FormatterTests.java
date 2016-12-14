@@ -53,7 +53,7 @@ public class FormatterTests extends AbstractFormatterTests {
 
 	private String format(String sourceContent) throws Exception {
 		IDocument document = new Document(sourceContent);
-		TextEdit textEdit = new Formatter(false).format(sourceContent);
+		TextEdit textEdit = new Formatter().format(sourceContent);
 		textEdit.apply(document);
 		return document.get();
 	}

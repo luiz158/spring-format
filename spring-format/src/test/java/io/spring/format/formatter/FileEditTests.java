@@ -60,7 +60,7 @@ public class FileEditTests {
 		Files.copy(new File("src/test/resources/expected/javadoc-top.txt").toPath(),
 				this.expected.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		String content = read(this.source);
-		this.textEdit = new Formatter(false).format(content);
+		this.textEdit = new Formatter().format(content);
 		this.fileEdit = new FileEdit(this.source, UTF_8, content, this.textEdit);
 	}
 
@@ -77,7 +77,7 @@ public class FileEditTests {
 	@Test
 	public void hasEditsWhenHasNoEditsShouldReturnFalse() throws Exception {
 		String content = read(this.expected);
-		this.textEdit = new Formatter(false).format(content);
+		this.textEdit = new Formatter().format(content);
 		this.fileEdit = new FileEdit(this.source, UTF_8, content, this.textEdit);
 		assertThat(this.fileEdit.hasEdits()).isFalse();
 	}

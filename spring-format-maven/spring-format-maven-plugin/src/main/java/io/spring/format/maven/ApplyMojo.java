@@ -40,8 +40,9 @@ public class ApplyMojo extends FormatMojo {
 	protected void execute(List<File> files, Charset encoding)
 			throws MojoExecutionException, MojoFailureException {
 		try {
-			new FileFormatter(false).formatFiles(files, encoding)
-					.filter(FileEdit::hasEdits).forEach(this::save);
+			FileFormatter formatter = new FileFormatter();
+			formatter.formatFiles(files, encoding).filter(FileEdit::hasEdits)
+					.forEach(this::save);
 		}
 		catch (FileFormatterException ex) {
 			throw new MojoExecutionException("Unable to format file " + ex.getFile(), ex);

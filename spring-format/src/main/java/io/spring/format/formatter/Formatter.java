@@ -18,9 +18,12 @@ package io.spring.format.formatter;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import io.spring.format.formatter.preparator.Preparators;
@@ -53,7 +56,7 @@ public class Formatter extends CodeFormatter {
 	 */
 	private static final String DEFAULT_LINE_SEPARATOR = null;
 
-	private final boolean nlsWarnings;
+	private final Set<FormatterOption> options;
 
 	private CodeFormatter delegate = new DelegateCodeFormatter();
 
@@ -61,15 +64,15 @@ public class Formatter extends CodeFormatter {
 	 * Create a new formatter instance.
 	 */
 	public Formatter() {
-		this(true);
+		this.options = Collections.emptySet();
 	}
 
 	/**
 	 * Create a new formatter instance.
-	 * @param nlsWarnings if NLS warnings should be printed.
+	 * @param options formatter options
 	 */
-	public Formatter(boolean nlsWarnings) {
-		this.nlsWarnings = nlsWarnings;
+	public Formatter(FormatterOption... options) {
+		this.options = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(options)));
 	}
 
 	/**
@@ -121,7 +124,7 @@ public class Formatter extends CodeFormatter {
 	}
 
 	private <T> T nlsSafe(Supplier<T> formatted) {
-		if (this.nlsWarnings) {
+		if (this.options.contains(FormatterOption.SHOW_NLS_WARNINGS)) {
 			return formatted.get();
 		}
 		String nlsWarnings = System.getProperty("osgi.nls.warnings");

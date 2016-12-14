@@ -37,9 +37,10 @@ public class ValidateTask extends FormatterTask {
 
 	@Override
 	public void run() throws Exception {
-		List<File> problems = new FileFormatter(false)
-				.formatFiles(this.files, this.encoding).filter(FileEdit::hasEdits)
-				.map(FileEdit::getFile).collect(Collectors.toList());
+		FileFormatter formatter = new FileFormatter();
+		List<File> problems = formatter.formatFiles(this.files, this.encoding)
+				.filter(FileEdit::hasEdits).map(FileEdit::getFile)
+				.collect(Collectors.toList());
 		if (!problems.isEmpty()) {
 			StringBuilder message = new StringBuilder(
 					"Formatting violations found in the following files:\n");
