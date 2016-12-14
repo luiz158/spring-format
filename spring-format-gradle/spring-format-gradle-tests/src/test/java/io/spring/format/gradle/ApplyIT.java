@@ -37,7 +37,7 @@ public class ApplyIT {
 		String location = "src/main/java/simple/Simple.java";
 		Path original = Paths.get("src/test/resources/apply/" + location);
 		Path formatted = Paths.get("target/apply/" + location);
-		Path expected = Paths.get("src/test/resources/check-valid/" + location);
+		Path expected = Paths.get("src/test/resources/validate-ok/" + location);
 		assertThat(Files.readAllLines(formatted))
 				.isNotEqualTo(Files.readAllLines(original))
 				.isEqualTo(Files.readAllLines(expected));

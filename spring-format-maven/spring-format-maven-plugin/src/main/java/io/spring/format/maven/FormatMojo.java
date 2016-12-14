@@ -18,6 +18,7 @@ package io.spring.format.maven;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -87,7 +88,9 @@ public abstract class FormatMojo extends AbstractMojo {
 		for (File directory : directories) {
 			files.addAll(scan(directory));
 		}
-		execute(files, Charset.forName(this.encoding));
+		Charset encoding = (this.encoding == null ? StandardCharsets.UTF_8
+				: Charset.forName(this.encoding));
+		execute(files, encoding);
 	}
 
 	private Stream<File> resolve(List<String> directories) {

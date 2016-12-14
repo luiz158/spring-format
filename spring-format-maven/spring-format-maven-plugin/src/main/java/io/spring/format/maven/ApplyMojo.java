@@ -33,7 +33,7 @@ import org.apache.maven.plugins.annotations.Mojo;
  *
  * @author Phillip Webb
  */
-@Mojo(name = "apply", defaultPhase = LifecyclePhase.PROCESS_SOURCES, requiresProject = false)
+@Mojo(name = "apply", defaultPhase = LifecyclePhase.PROCESS_SOURCES)
 public class ApplyMojo extends FormatMojo {
 
 	@Override
