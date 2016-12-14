@@ -74,7 +74,7 @@ class JavadocLineBreakPreparator implements Preparator {
 
 		private final TokenManager tokenManager;
 
-		private NestedTokenManager commentTokenManager;
+		private TokenManager commentTokenManager;
 
 		private ASTNode declaration;
 
@@ -91,8 +91,8 @@ class JavadocLineBreakPreparator implements Preparator {
 			int commentIndex = this.tokenManager.firstIndexIn(node,
 					TerminalTokens.TokenNameCOMMENT_JAVADOC);
 			Token commentToken = this.tokenManager.get(commentIndex);
-			this.commentTokenManager = new NestedTokenManager(commentToken,
-					this.tokenManager);
+			this.commentTokenManager = new TokenManager(
+					commentToken.getInternalStructure(), this.tokenManager);
 			this.declaration = node.getParent();
 			this.firstTagElement = true;
 			this.hasText = false;
@@ -109,7 +109,7 @@ class JavadocLineBreakPreparator implements Preparator {
 		public boolean visit(TagElement node) {
 			if (isSquashRequired(node, this.declaration)) {
 				int startIndex = this.commentTokenManager
-						.tokenStartingAt(node.getStartPosition());
+						.findIndex(node.getStartPosition(), -1, false);
 				Token token = this.commentTokenManager.get(startIndex);
 				token.clearLineBreaksBefore();
 				token.putLineBreaksBefore(this.declaration instanceof TypeDeclaration

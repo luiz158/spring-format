@@ -1,0 +1,11 @@
+package simple;
+
+public class Simple {
+
+	public static final String FOO;
+
+	static {
+		FOO = "bar";
+	}
+
+}

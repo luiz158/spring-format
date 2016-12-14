@@ -17,10 +17,15 @@
 package io.spring.format.formatter;
 
 /**
+ * Options that can be used to configure a {@link Formatter}.
+ *
  * @author Phillip Webb
  */
 public enum FormatterOption {
 
+	/**
+	 * Show Eclipse NLS warnings.
+	 */
 	SHOW_NLS_WARNINGS
 
 }

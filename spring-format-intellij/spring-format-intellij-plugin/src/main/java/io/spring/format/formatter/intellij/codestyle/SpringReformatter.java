@@ -98,7 +98,7 @@ class SpringReformatter {
 
 	private void reformat(PsiFile file, Collection<TextRange> ranges, Document document) {
 		if (document != null) {
-			Formatter formatter = new Formatter(false);
+			Formatter formatter = new Formatter();
 			String source = document.getText();
 			IRegion[] regions = EclipseRegionAdapter.asArray(ranges);
 			TextEdit edit = formatter.format(source, regions);
