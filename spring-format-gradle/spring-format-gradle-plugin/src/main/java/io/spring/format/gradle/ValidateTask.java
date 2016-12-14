@@ -25,15 +25,15 @@ import io.spring.format.formatter.FileFormatter;
 import org.gradle.api.GradleException;
 
 /**
- * {@link FormatterTask} to check formatting.
+ * {@link FormatterTask} to validate formatting.
  *
  * @author Phillip Webb
  */
-public class CheckTask extends FormatterTask {
+public class ValidateTask extends FormatterTask {
 
-	static final String NAME = "springFormatCheck";
+	static final String NAME = "springFormatValidate";
 
-	static final String DESCRIPTION = "Checks Java source code formatting against Spring conventions";
+	static final String DESCRIPTION = "Validates Java source code formatting against Spring conventions";
 
 	@Override
 	public void run() throws Exception {

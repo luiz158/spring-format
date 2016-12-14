@@ -29,17 +29,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class CheckIT {
+public class ValidateIT {
 
 	@Test
 	public void checkValid() throws Exception {
-		new ProjectCreator().run("check-valid", "springFormatCheck");
+		new ProjectCreator().run("validate-ok", "springFormatValidate");
 	}
 
 	@Test
 	public void checkInvalid() throws Exception {
 		try {
-			new ProjectCreator().run("check-invalid", "springFormatCheck");
+			new ProjectCreator().run("validate-bad", "springFormatValidate");
 		}
 		catch (BuildException ex) {
 			// Expected
@@ -53,7 +53,7 @@ public class CheckIT {
 	@Test
 	public void checkInvalidBuild() throws Exception {
 		try {
-			new ProjectCreator().run("check-invalid", "build");
+			new ProjectCreator().run("validate-bad", "build");
 		}
 		catch (BuildException ex) {
 			// Expected

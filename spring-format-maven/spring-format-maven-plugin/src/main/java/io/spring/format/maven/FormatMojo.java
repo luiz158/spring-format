@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -82,19 +83,21 @@ public abstract class FormatMojo extends AbstractMojo {
 		List<File> directories = new ArrayList<>();
 		resolve(this.sourceDirectories).forEach(directories::add);
 		resolve(this.testSourceDirectories).forEach(directories::add);
-		Stream<File> files = Stream.empty();
+		List<File> files = new ArrayList<>();
 		for (File directory : directories) {
-			Stream.concat(files, scan(directory));
+			files.addAll(scan(directory));
 		}
 		execute(files, Charset.forName(this.encoding));
 	}
 
 	private Stream<File> resolve(List<String> directories) {
-		return directories.stream().map(
-				directory -> FileUtils.resolveFile(this.project.getBasedir(), directory));
+		return directories
+				.stream().map(directory -> FileUtils
+						.resolveFile(this.project.getBasedir(), directory))
+				.filter(File::exists).filter(File::isDirectory);
 	}
 
-	private Stream<File> scan(File directory) {
+	private List<File> scan(File directory) {
 		DirectoryScanner scanner = new DirectoryScanner();
 		scanner.setBasedir(directory);
 		scanner.setIncludes(hasLength(this.includes) ? this.includes : DEFAULT_INCLUDES);
@@ -104,7 +107,7 @@ public abstract class FormatMojo extends AbstractMojo {
 		scanner.setFollowSymlinks(false);
 		scanner.scan();
 		return Arrays.asList(scanner.getIncludedFiles()).stream()
-				.map(name -> new File(directory, name));
+				.map(name -> new File(directory, name)).collect(Collectors.toList());
 	}
 
 	private boolean hasLength(Object[] array) {
@@ -118,7 +121,7 @@ public abstract class FormatMojo extends AbstractMojo {
 	 * @throws MojoExecutionException on execution error
 	 * @throws MojoFailureException on failure
 	 */
-	protected abstract void execute(Stream<File> files, Charset encoding)
+	protected abstract void execute(List<File> files, Charset encoding)
 			throws MojoExecutionException, MojoFailureException;
 
 }

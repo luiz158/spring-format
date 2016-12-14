@@ -18,23 +18,26 @@ package io.spring.format.maven;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.stream.Stream;
+import java.util.List;
 
 import io.spring.format.formatter.FileEdit;
 import io.spring.format.formatter.FileFormatter;
 import io.spring.format.formatter.FileFormatterException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
 
 /**
  * FIXME.
  *
  * @author Phillip Webb
  */
+@Mojo(name = "apply", defaultPhase = LifecyclePhase.PROCESS_SOURCES, requiresProject = false)
 public class ApplyMojo extends FormatMojo {
 
 	@Override
-	protected void execute(Stream<File> files, Charset encoding)
+	protected void execute(List<File> files, Charset encoding)
 			throws MojoExecutionException, MojoFailureException {
 		try {
 			new FileFormatter(false).formatFiles(files, encoding)

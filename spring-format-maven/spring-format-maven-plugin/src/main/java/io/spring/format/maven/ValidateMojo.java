@@ -20,22 +20,24 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import io.spring.format.formatter.FileEdit;
 import io.spring.format.formatter.FileFormatter;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
 
 /**
  * FIXME.
  *
  * @author Phillip Webb
  */
-public class CheckMojo extends FormatMojo {
+@Mojo(name = "validate", defaultPhase = LifecyclePhase.VALIDATE)
+public class ValidateMojo extends FormatMojo {
 
 	@Override
-	protected void execute(Stream<File> files, Charset encoding)
+	protected void execute(List<File> files, Charset encoding)
 			throws MojoExecutionException, MojoFailureException {
 		List<File> problems = new FileFormatter(false).formatFiles(files, encoding)
 				.filter(FileEdit::hasEdits).map(FileEdit::getFile)

@@ -12,8 +12,9 @@
 		<assertj.version>3.6.1</assertj.version>
 		<gradle.version>2.9</gradle.version>
 		<groovy.version>2.4.7</groovy.version>
+		<maven-core.version>3.3.9</maven-core.version>
+		<maven-plugin-api.version>${maven-core.version}</maven-plugin-api.version>
 		<maven-plugin-annotations.version>3.5</maven-plugin-annotations.version>
-		<maven-plugin-api.version>3.3.9</maven-plugin-api.version>
 		<mockito.version>2.2.29</mockito.version>
 		<junit.version>4.12</junit.version>
 		<picocontainer.version>1.2</picocontainer.version>
@@ -348,6 +349,12 @@
 				<groupId>org.assertj</groupId>
 				<artifactId>assertj-core</artifactId>
 				<version>${assertj.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-core</artifactId>
+				<scope>provided</scope>
+				<version>${maven-core.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven</groupId>
