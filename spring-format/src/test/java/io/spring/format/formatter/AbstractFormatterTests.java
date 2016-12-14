@@ -74,4 +74,5 @@ public abstract class AbstractFormatterTests {
 		}
 		return files;
 	}
+
 }

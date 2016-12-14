@@ -41,6 +41,7 @@ import org.codehaus.plexus.util.FileUtils;
 public abstract class FormatMojo extends AbstractMojo {
 
 	private static final String[] DEFAULT_INCLUDES = new String[] { "**/*.java" };
+
 	/**
 	 * The Maven Project Object.
 	 */
@@ -94,9 +95,8 @@ public abstract class FormatMojo extends AbstractMojo {
 	}
 
 	private Stream<File> resolve(List<String> directories) {
-		return directories
-				.stream().map(directory -> FileUtils
-						.resolveFile(this.project.getBasedir(), directory))
+		return directories.stream().map(
+				directory -> FileUtils.resolveFile(this.project.getBasedir(), directory))
 				.filter(File::exists).filter(File::isDirectory);
 	}
 

@@ -36,8 +36,8 @@ public class ApplyTask extends FormatterTask {
 	public void run() throws Exception {
 		try {
 			FileFormatter formatter = new FileFormatter();
-			formatter.formatFiles(this.files, this.encoding)
-					.filter(FileEdit::hasEdits).forEach(FileEdit::save);
+			formatter.formatFiles(this.files, this.encoding).filter(FileEdit::hasEdits)
+					.forEach(FileEdit::save);
 		}
 		catch (FileFormatterException ex) {
 			throw new GradleException("Unable to format file " + ex.getFile(), ex);

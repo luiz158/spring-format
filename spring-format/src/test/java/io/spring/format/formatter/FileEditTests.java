@@ -99,4 +99,5 @@ public class FileEditTests {
 	private String read(File file) throws IOException {
 		return new String(Files.readAllBytes(file.toPath()), UTF_8);
 	}
+
 }

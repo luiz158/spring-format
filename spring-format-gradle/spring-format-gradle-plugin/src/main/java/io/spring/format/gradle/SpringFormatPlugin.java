@@ -39,7 +39,8 @@ public class SpringFormatPlugin implements Plugin<Project> {
 	}
 
 	private void addCheckTask(Project project) {
-		ValidateTask checkTask = project.getTasks().create(ValidateTask.NAME, ValidateTask.class);
+		ValidateTask checkTask = project.getTasks().create(ValidateTask.NAME,
+				ValidateTask.class);
 		project.getTasks().matching(this::isJavaCheckTask)
 				.all(task -> task.dependsOn(checkTask));
 	}
