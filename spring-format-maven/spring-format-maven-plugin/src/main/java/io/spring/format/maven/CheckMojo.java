@@ -18,11 +18,12 @@ package io.spring.format.maven;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.spring.format.formatter.FileEdit;
 import io.spring.format.formatter.FileFormatter;
-import io.spring.format.formatter.FileFormatterException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -31,23 +32,21 @@ import org.apache.maven.plugin.MojoFailureException;
  *
  * @author Phillip Webb
  */
-public class ApplyMojo extends FormatMojo {
+public class CheckMojo extends FormatMojo {
 
 	@Override
 	protected void execute(Stream<File> files, Charset encoding)
 			throws MojoExecutionException, MojoFailureException {
-		try {
-			new FileFormatter(false).formatFiles(files, encoding)
-					.filter(FileEdit::hasEdits).forEach(this::save);
+		List<File> problems = new FileFormatter(false).formatFiles(files, encoding)
+				.filter(FileEdit::hasEdits).map(FileEdit::getFile)
+				.collect(Collectors.toList());
+		if (!problems.isEmpty()) {
+			StringBuilder message = new StringBuilder(
+					"Formatting violations found in the following files:\n");
+			problems.stream().forEach((f) -> message.append(" * " + f + "\n"));
+			message.append("\nRun `springFormatApply` to fix.");
+			throw new MojoFailureException(message.toString());
 		}
-		catch (FileFormatterException ex) {
-			throw new MojoExecutionException("Unable to format file " + ex.getFile(), ex);
-		}
-	}
-
-	private void save(FileEdit edit) {
-		getLog().debug("Formatting file " + edit.getFile());
-		edit.save();
 	}
 
 }

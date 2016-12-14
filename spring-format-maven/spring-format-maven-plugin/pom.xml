@@ -19,6 +19,14 @@
 			<artifactId>maven-plugin-api</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.spring.format</groupId>
+			<artifactId>spring-format</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.spring.format</groupId>
+			<artifactId>spring-format-eclipse-runtime</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-checkstyle-plugin</artifactId>
 			<version>2.17</version>

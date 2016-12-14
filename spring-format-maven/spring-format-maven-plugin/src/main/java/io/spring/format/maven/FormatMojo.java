@@ -17,11 +17,15 @@
 package io.spring.format.maven;
 
 import java.io.File;
-import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
@@ -73,33 +77,48 @@ public abstract class FormatMojo extends AbstractMojo {
 	@Parameter(property = "encoding", defaultValue = "${project.build.sourceEncoding}")
 	private String encoding;
 
-	private List<File> resolveFiles(List<String> directories) {
-		List<File> resolved = new ArrayList<>(directories.size());
-		for (String dir : directories) {
-			resolved.add(FileUtils.resolveFile(this.project.getBasedir(), dir));
+	@Override
+	public final void execute() throws MojoExecutionException, MojoFailureException {
+		List<File> directories = new ArrayList<>();
+		resolve(this.sourceDirectories).forEach(directories::add);
+		resolve(this.testSourceDirectories).forEach(directories::add);
+		Stream<File> files = Stream.empty();
+		for (File directory : directories) {
+			Stream.concat(files, scan(directory));
 		}
-		return resolved;
+		execute(files, Charset.forName(this.encoding));
 	}
 
-	Iterable<File> addCollectionFiles(File newBasedir) throws IOException {
-		DirectoryScanner ds = new DirectoryScanner();
-		ds.setBasedir(newBasedir);
-		if (this.includes != null && this.includes.length > 0) {
-			ds.setIncludes(this.includes);
-		}
-		else {
-			ds.setIncludes(DEFAULT_INCLUDES);
-		}
-		ds.setExcludes(this.excludes);
-		ds.addDefaultExcludes();
-		ds.setCaseSensitive(false);
-		ds.setFollowSymlinks(false);
-		ds.scan();
-		List<File> foundFiles = new ArrayList<>();
-		for (String filename : ds.getIncludedFiles()) {
-			foundFiles.add(new File(newBasedir, filename));
-		}
-		return foundFiles;
+	private Stream<File> resolve(List<String> directories) {
+		return directories.stream().map(
+				directory -> FileUtils.resolveFile(this.project.getBasedir(), directory));
 	}
+
+	private Stream<File> scan(File directory) {
+		DirectoryScanner scanner = new DirectoryScanner();
+		scanner.setBasedir(directory);
+		scanner.setIncludes(hasLength(this.includes) ? this.includes : DEFAULT_INCLUDES);
+		scanner.setExcludes(this.excludes);
+		scanner.addDefaultExcludes();
+		scanner.setCaseSensitive(false);
+		scanner.setFollowSymlinks(false);
+		scanner.scan();
+		return Arrays.asList(scanner.getIncludedFiles()).stream()
+				.map(name -> new File(directory, name));
+	}
+
+	private boolean hasLength(Object[] array) {
+		return array != null && array.length > 0;
+	}
+
+	/**
+	 * Perform the formatting build-process behavior this {@code Mojo} implements.
+	 * @param files the files to process
+	 * @param encoding the encoding
+	 * @throws MojoExecutionException on execution error
+	 * @throws MojoFailureException on failure
+	 */
+	protected abstract void execute(Stream<File> files, Charset encoding)
+			throws MojoExecutionException, MojoFailureException;
 
 }
