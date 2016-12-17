@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+package sample;
+
 /**
  * An example application that can be used to manually test the Maven Plugin and IDE
  * integration.
